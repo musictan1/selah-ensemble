@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>찬양사역영상 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/main.js" defer></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .file-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .video-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .video-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 250px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .play-overlay i {
+            font-size: 48px;
+            color: white;
+        }
+
+        .video-container:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .video-name {
+            margin-bottom: 10px;
+        }
+
+        .video-name h4 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .video-actions {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 5px !important;
+            margin-top: 15px !important;
+            width: 100% !important;
+            justify-content: space-between !important;
+        }
+
+        .video-actions button {
+            display: inline-block !important;
+            padding: 10px 15px !important;
+            border: none !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            flex: 1 !important;
+            min-width: 80px !important;
+            text-align: center !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .preview-btn {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        .edit-btn {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .delete-btn {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 900px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #333;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-video-container {
+            width: 100%;
+            background-color: #000;
+        }
+
+        .modal-video {
+            width: 100%;
+            display: block;
+            max-height: 70vh;
+        }
+
+        /* Force reset for buttons to ensure visibility */
+        .action-buttons-container {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 40px;
+            margin-top: 10px;
+            z-index: 100;
+        }
+        
+        .action-button {
+            flex: 1;
+            margin: 0 5px;
+            padding: 8px 0;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 101;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .preview-button {
+            background-color: #28a745;
+        }
+        
+        .edit-button {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .delete-button {
+            background-color: #dc3545;
+        }
+
+        /* 강화된 버튼 스타일 - 절대 위치와 높은 z-index 적용 */
+        .video-button-controls {
+            position: relative;
+            display: flex;
+            top: auto;
+            right: auto;
+            width: 100%;
+            margin-top: 10px;
+            z-index: 9999;
+            gap: 5px;
+        }
+        
+        .video-control-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+            transition: all 0.2s ease;
+            z-index: 10000;
+            text-align: center;
+        }
+        
+        .video-control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+        }
+        
+        .video-preview-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .video-edit-btn {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .video-delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        /* 알림 스타일 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .notification.success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .notification.error {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .notification.info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .notification.warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>찬양사역영상</h2>
+            
+            <!-- Fixed position refresh button -->
+            <div style="position: fixed; top: 100px; right: 20px; z-index: 9999;">
+                <button onclick="window.location.reload()" 
+                        style="padding: 10px 15px; background-color: #dc3545; color: white; 
+                               border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+                               box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    <i class="fas fa-sync-alt"></i> 페이지 새로고침
+                </button>
+            </div>
+            
+            <div class="container">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                    <button onclick="loadFiles()" class="refresh-btn" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                        <i class="fas fa-sync-alt"></i> 영상 목록 새로고침
+                    </button>
+                </div>
+                <div class="upload-section">
+                    <h3>영상 업로드</h3>
+                    <form id="videos-upload-form">
+                        <div class="file-input-container">
+                            <input type="file" name="file" id="fileInput" class="file-input" accept="video/*">
+                            <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">파일 선택</button>
+                            <span id="selectedFileName">선택된 파일 없음</span>
+                            <button type="submit" class="upload-btn">업로드</button>
+                        </div>
+                        <div id="errorMessage" class="error-message"></div>
+                        <div id="successMessage" class="success-message"></div>
+                    </form>
+                </div>
+
+                <div id="videos-list" class="video-list">
+                    <!-- 영상 목록이 여기에 동적으로 추가됩니다 -->
+                    <p>로딩 중...</p>
+                </div>
+                
+                <!-- 직접 접근 버튼 패널 -->
+                <div id="direct-buttons-panel" style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; 
+                     border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <h3 style="margin-top: 0; color: #007bff;">영상 직접 관리</h3>
+                    <p style="margin-bottom: 15px;">버튼이 보이지 않을 경우 아래에서 직접 관리하세요:</p>
+                    <div id="direct-videos-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- 여기에 동적으로 비디오 직접 관리 버튼이 추가됩니다 -->
+                    </div>
+                </div>
+                
+                <!-- 관리자용 문제 해결 버튼 -->
+                <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px dashed #ccc;">
+                    <h4 style="margin-top: 0; color: #666;">관리자용 문제 해결</h4>
+                    <p style="margin-bottom: 10px; color: #666; font-size: 14px;">영상이 보이지 않거나 버튼이 작동하지 않는 경우 아래 버튼을 클릭하세요.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="loadFiles()" style="padding: 8px 15px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-sync-alt"></i> 영상 목록 다시 불러오기
+                        </button>
+                        <button onclick="checkVideoElements()" style="padding: 8px 15px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-bug"></i> 비디오 요소 확인
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 미리보기 모달 -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">영상 미리보기</h4>
+                <button id="close-preview" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-video-container">
+                    <video id="preview-video" class="modal-video" controls></video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let isAdmin = false;
+
+        // 페이지 로드 시 사용자 정보 확인
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            loadFiles();
+        });
+
+        // 사용자 인증 확인 함수
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/check-auth');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated || data.is_authenticated) {
+                        currentUser = data.user;
+                        isAdmin = currentUser.role === 'admin';
+                        console.log("로그인 상태: 관리자 권한 =", isAdmin);
+                    } else {
+                        currentUser = null;
+                        isAdmin = false;
+                        console.log("로그인되지 않은 상태");
+                    }
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                    console.log("인증 확인 실패");
+                }
+            } catch (error) {
+                console.error('인증 확인 중 오류 발생:', error);
+                currentUser = null;
+                isAdmin = false;
+            }
+        }
+
+        // Global error handler to catch and log any JavaScript errors
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('JavaScript error:', { message, source, lineno, colno, error });
+            return false;
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 파일 이름 표시
+            document.getElementById('fileInput').addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : '선택된 파일 없음';
+                document.getElementById('selectedFileName').textContent = fileName;
+            });
+
+            // 인증 상태 확인
+            fetch('/api/check-auth')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.authenticated && !data.is_authenticated) {
+                        alert('로그인이 필요한 페이지입니다.');
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    
+                    console.log("인증 성공, 파일 목록 로드 중...");
+                    loadFiles();
+                    
+                    // 비디오 업로드
+                    document.getElementById('videos-upload-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        uploadFile('videos/default', this);
+                    });
+                })
+                .catch(error => {
+                    console.error('인증 확인 오류:', error);
+                    alert('인증 확인 중 오류가 발생했습니다.');
+                    window.location.href = '/login.html';
+                });
+
+            // 미리보기 모달 닫기
+            document.getElementById('close-preview').addEventListener('click', function() {
+                const modal = document.getElementById('preview-modal');
+                const video = document.getElementById('preview-video');
+                video.pause();
+                video.removeAttribute('src');
+                modal.style.display = 'none';
+            });
+            
+            // 페이지가 완전히 로드된 후 3초 후에 비디오 목록을 한 번 더 새로고침 (로딩 문제 대비)
+            setTimeout(loadFiles, 3000);
+            
+            // 버튼 가시성 확인 및 문제 해결
+            setTimeout(checkVideoButtons, 5000);
+        });
+
+        function loadFiles() {
+            console.log("Fetching file list...");
+            fetch('/check_files')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("파일 목록 데이터:", data);
+                    
+                    // 응답 형식 확인
+                    if (data.status === 'error') {
+                        throw new Error(data.error || '알 수 없는 오류가 발생했습니다.');
+                    }
+                    
+                    // 이전 버전과의 호환성을 위한 처리
+                    let files = data;
+                    if (data.status === 'success') {
+                        // 새 형식에서는 music, scores, videos 키가 최상위 객체 아래에 있음
+                        files = {
+                            music: data.music,
+                            scores: data.scores,
+                            videos: data.videos
+                        };
+                    }
+                    
+                    console.log("데이터 최종 형태:", files);
+                    
+                    // 영상 파일 목록 표시
+                    const videosListElem = document.getElementById('videos-list');
+                    if (videosListElem) {
+                        videosListElem.innerHTML = '';
+                        
+                        if (files.videos && files.videos.length > 0) {
+                            console.log("비디오 파일 수:", files.videos.length);
+                            console.log("비디오 파일 목록:", files.videos);
+                            
+                            // 문제 해결을 위한 로그 추가
+                            console.log("영상 파일 로드 중...");
+                            
+                            files.videos.forEach((file, index) => {
+                                console.log(`영상 ${index + 1} 생성 시작: ${file}`);
+                                const videoItem = createVideoItem(file);
+                                videosListElem.appendChild(videoItem);
+                                console.log(`영상 ${index + 1} (${file}) 생성 및 추가 완료`);
+                            });
+                            
+                            console.log("모든 영상 파일 로드 완료");
+                            
+                            // 직접 접근 버튼 패널 업데이트
+                            updateDirectButtonsPanel(files.videos);
+                            
+                            // 버튼 클릭 이벤트 확인을 위한 테스트
+                            setTimeout(() => {
+                                const buttons = document.querySelectorAll('.video-button-controls button');
+                                console.log(`생성된 버튼 수: ${buttons.length}`);
+                                
+                                if (buttons.length > 0) {
+                                    console.log("첫 번째 영상의 버튼 확인:", {
+                                        preview: buttons[0].textContent,
+                                        edit: buttons[1] ? buttons[1].textContent : 'not found',
+                                        delete: buttons[2] ? buttons[2].textContent : 'not found'
+                                    });
+                                }
+                            }, 500);
+                        } else {
+                            console.log("비디오 파일이 없음");
+                            videosListElem.innerHTML = '<p>등록된 영상이 없습니다.</p>';
+                        }
+                    } else {
+                        console.error("videos-list 요소를 찾을 수 없음");
+                    }
+                })
+                .catch(error => {
+                    console.error('파일 목록 로드 오류:', error);
+                    const videosListElem = document.getElementById('videos-list');
+                    if (videosListElem) {
+                        videosListElem.innerHTML = '<p class="error">파일 목록을 불러오는데 실패했습니다: ' + error.message + '</p>';
+                    }
+                });
+        }
+
+        function createVideoItem(filename) {
+            // Create main container with DOM API for better reliability
+            const div = document.createElement('div');
+            div.className = 'video-item';
+            div.style.position = 'relative';
+            
+            // Try to determine the correct video URL path
+            let videoUrl = `uploads/videos/default/${encodeURIComponent(filename)}`;
+            
+            // 1. Create video container
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'video-container';
+            videoContainer.style.position = 'relative';
+            videoContainer.style.paddingBottom = '56.25%';
+            videoContainer.style.height = '0';
+            videoContainer.style.overflow = 'hidden';
+            videoContainer.style.marginBottom = '10px';
+            videoContainer.style.backgroundColor = '#f0f0f0';
+            videoContainer.style.borderRadius = '4px';
+            videoContainer.style.cursor = 'pointer';
+            
+            // Add click event to video container
+            videoContainer.addEventListener('click', function(e) {
+                e.stopPropagation();
+                previewVideo(videoUrl, filename);
+            });
+            
+            // 2. Create video element with error handling
+            const video = document.createElement('video');
+            video.src = videoUrl;
+            video.preload = 'metadata';
+            video.muted = true;
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            
+            // Add error handling for video loading
+            video.onerror = function() {
+                console.error(`Error loading video from ${videoUrl}`);
+                // Try alternative path as fallback
+                const altVideoUrl = `uploads/videos/${encodeURIComponent(filename)}`;
+                console.log(`Trying alternative path: ${altVideoUrl}`);
+                video.src = altVideoUrl;
+                videoUrl = altVideoUrl; // Update the URL for other functions
+            };
+            
+            // 3. Create play overlay
+            const playOverlay = document.createElement('div');
+            playOverlay.className = 'play-overlay';
+            playOverlay.style.position = 'absolute';
+            playOverlay.style.top = '0';
+            playOverlay.style.left = '0';
+            playOverlay.style.width = '100%';
+            playOverlay.style.height = '100%';
+            playOverlay.style.display = 'flex';
+            playOverlay.style.alignItems = 'center';
+            playOverlay.style.justifyContent = 'center';
+            playOverlay.style.backgroundColor = 'rgba(0,0,0,0.3)';
+            playOverlay.style.opacity = '0';
+            playOverlay.style.transition = '0.3s';
+            playOverlay.style.zIndex = '5';
+            
+            // Add hover effect to play overlay
+            playOverlay.addEventListener('mouseover', function() {
+                this.style.opacity = '1';
+            });
+            
+            playOverlay.addEventListener('mouseout', function() {
+                this.style.opacity = '0';
+            });
+            
+            // 4. Create play icon
+            const playIcon = document.createElement('i');
+            playIcon.className = 'fas fa-play-circle';
+            playIcon.style.fontSize = '48px';
+            playIcon.style.color = 'white';
+            
+            // 5. Create title container
+            const titleContainer = document.createElement('div');
+            titleContainer.style.marginBottom = '10px';
+            
+            // 6. Create title
+            const title = document.createElement('h4');
+            title.textContent = filename;
+            title.style.margin = '0';
+            title.style.fontSize = '16px';
+            title.style.overflow = 'hidden';
+            title.style.textOverflow = 'ellipsis';
+            title.style.whiteSpace = 'nowrap';
+            title.style.color = '#333';
+            
+            // 7. Create button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'video-button-controls';
+            buttonContainer.style.position = 'relative';
+            buttonContainer.style.top = 'auto';
+            buttonContainer.style.right = 'auto';
+            buttonContainer.style.width = '100%';
+            buttonContainer.style.marginTop = '10px';
+            buttonContainer.style.zIndex = '10';
+            
+            // 8. Create preview button
+            const previewBtn = document.createElement('button');
+            previewBtn.className = 'video-control-btn video-preview-btn';
+            previewBtn.innerHTML = '<i class="fas fa-play"></i> 미리보기';
+            previewBtn.onclick = function(e) {
+                e.stopPropagation();
+                previewVideo(videoUrl, filename);
+                return false;
+            };
+            
+            // 9. Create edit button
+            const editBtn = document.createElement('button');
+            editBtn.className = 'video-control-btn video-edit-btn';
+            editBtn.innerHTML = '<i class="fas fa-edit"></i> 수정';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editVideoFile(filename);
+                return false;
+            };
+            // 관리자만 볼 수 있도록 설정
+            if (!isAdmin) {
+                editBtn.style.display = 'none';
+            }
+            
+            // 10. Create delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'video-control-btn video-delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> 삭제';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteVideoFile(filename);
+                return false;
+            };
+            // 관리자만 볼 수 있도록 설정
+            if (!isAdmin) {
+                deleteBtn.style.display = 'none';
+            }
+            
+            // Assemble all elements
+            playOverlay.appendChild(playIcon);
+            videoContainer.appendChild(video);
+            videoContainer.appendChild(playOverlay);
+            
+            titleContainer.appendChild(title);
+            
+            buttonContainer.appendChild(previewBtn);
+            buttonContainer.appendChild(editBtn);
+            buttonContainer.appendChild(deleteBtn);
+            
+            div.appendChild(videoContainer);
+            div.appendChild(titleContainer);
+            div.appendChild(buttonContainer);
+            
+            return div;
+        }
+
+        function previewVideo(url, filename) {
+            console.log("Opening preview for:", url);
+            const modal = document.getElementById('preview-modal');
+            const video = document.getElementById('preview-video');
+            const title = document.querySelector('.modal-title');
+            
+            // Clear previous errors
+            video.innerHTML = '';
+            
+            // Update the video source and metadata
+            video.src = url;
+            title.textContent = `영상 미리보기: ${filename}`;
+            
+            // Show the modal with flex display to center it
+            modal.style.display = 'flex';
+            
+            // Try to play the video after it's loaded
+            video.addEventListener('loadedmetadata', function() {
+                console.log("Video metadata loaded");
+                video.play().catch(err => {
+                    console.error('Error playing video:', err);
+                });
+            });
+            
+            // Add one-time error handling for this specific video load
+            const errorHandler = function() {
+                console.error('Video load error:', video.error);
+                
+                // Try alternative path
+                const isDefaultPath = url.includes('/videos/default/');
+                const altUrl = isDefaultPath 
+                    ? `uploads/videos/${encodeURIComponent(filename)}`
+                    : `uploads/videos/default/${encodeURIComponent(filename)}`;
+                
+                console.log(`Trying alternative path: ${altUrl}`);
+                video.src = altUrl;
+                
+                // Replace this error handler with a simpler one for the alternative path
+                video.removeEventListener('error', errorHandler);
+                video.addEventListener('error', function() {
+                    console.error('Video load error with alternative path');
+                    alert('영상을 불러오는데 실패했습니다.');
+                    modal.style.display = 'none';
+                });
+            };
+            
+            video.addEventListener('error', errorHandler);
+            
+            console.log("Modal opened, video loading");
+        }
+
+        function uploadFile(category, form) {
+            const formData = new FormData(form);
+            formData.append('category', category);
+            
+            // 오류/성공 메시지 요소
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            
+            // 메시지 초기화
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 성공 메시지 표시
+                    successMsg.textContent = '파일이 업로드되었습니다.';
+                    successMsg.style.display = 'block';
+                    
+                    // 폼 초기화
+                    form.reset();
+                    document.getElementById('selectedFileName').textContent = '선택된 파일 없음';
+                    
+                    // 파일 목록 새로고침
+                    setTimeout(() => {
+                        loadFiles();
+                        successMsg.style.display = 'none';
+                    }, 2000);
+                } else {
+                    // 오류 메시지 표시
+                    errorMsg.textContent = '파일 업로드에 실패했습니다: ' + data.error;
+                    errorMsg.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMsg.textContent = '파일 업로드 중 오류가 발생했습니다.';
+                errorMsg.style.display = 'block';
+            });
+        }
+
+        function deleteVideoFile(filename) {
+            console.log(`Attempting to delete video: ${filename}`);
+            
+            if (!confirm(`정말로 '${filename}' 파일을 삭제하시겠습니까?`)) {
+                return;
+            }
+            
+            showNotification('info', `<i class="fas fa-spinner fa-spin"></i> 파일 삭제 중... 잠시만 기다려주세요.`);
+            
+            // 파일이 videos/default에 있을 가능성이 높으므로 먼저 시도
+            fetch(`/delete/videos/default/${filename}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 404) {
+                    // videos/default에 없으면 videos에서 시도
+                    console.log('File not found in videos/default, trying videos directory');
+                    return fetch(`/delete/videos/${filename}`, {
+                        method: 'DELETE'
+                    }).then(resp => {
+                        if (resp.ok) {
+                            return resp.json();
+                        }
+                        throw new Error('파일을 찾을 수 없습니다.');
+                    });
+                }
+                throw new Error('삭제 중 오류가 발생했습니다.');
+            })
+            .then(data => {
+                if (data.success) {
+                    showNotification('success', `<i class="fas fa-check-circle"></i> '${filename}' 파일이 삭제되었습니다.`);
+                    
+                    // 파일 목록 새로고침
+                    setTimeout(() => {
+                        loadFiles();
+                    }, 1000);
+                } else {
+                    showNotification('error', `<i class="fas fa-exclamation-circle"></i> 삭제 실패: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('error', `<i class="fas fa-exclamation-circle"></i> 오류 발생: ${error.message}`);
+            });
+        }
+
+        function editVideoFile(filename) {
+            console.log(`Editing video: ${filename}`);
+            showNotification('warning', `<i class="fas fa-edit"></i> '${filename}' 파일을 수정하려면 새 파일을 선택하세요.`);
+            
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/*';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    return;
+                }
+                
+                // Show upload progress
+                showNotification('info', `<i class="fas fa-spinner fa-spin"></i> 파일 업로드 중... 잠시만 기다려주세요.`);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('category', 'videos/default');
+                formData.append('oldFilename', filename);
+                
+                fetch('/edit', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', `<i class="fas fa-check-circle"></i> '${filename}' 파일이 성공적으로 수정되었습니다.`);
+                        setTimeout(() => {
+                            loadFiles();
+                        }, 1000);
+                    } else {
+                        showNotification('error', `<i class="fas fa-exclamation-circle"></i> 수정 실패: ${data.error || '알 수 없는 오류'}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', `<i class="fas fa-exclamation-circle"></i> 오류 발생: ${error.message}`);
+                });
+            };
+            
+            input.click();
+        }
+
+        function showNotification(type, message) {
+            // Remove any existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notif => {
+                document.body.removeChild(notif);
+            });
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message;
+            
+            // Add close button
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '5px';
+            closeBtn.style.right = '10px';
+            closeBtn.style.fontSize = '20px';
+            closeBtn.style.fontWeight = 'bold';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.onclick = function() {
+                document.body.removeChild(notification);
+            };
+            
+            notification.appendChild(closeBtn);
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds unless it's a progress notification
+            if (type !== 'info') {
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 5000);
+            }
+            
+            return notification;
+        }
+
+        function updateDirectButtonsPanel(videos) {
+            const directVideosList = document.getElementById('direct-videos-list');
+            
+            if (directVideosList) {
+                directVideosList.innerHTML = '';
+                
+                if (videos && videos.length > 0) {
+                    console.log(`비디오 파일 수: ${videos.length}`);
+                    
+                    videos.forEach((filename, index) => {
+                        console.log(`비디오 ${index + 1} 관리 패널 생성: ${filename}`);
+                        
+                        const videoUrl = `uploads/videos/default/${encodeURIComponent(filename)}`;
+                        
+                        // Create a simplified panel for each video
+                        const panel = document.createElement('div');
+                        panel.style.padding = '15px';
+                        panel.style.backgroundColor = 'white';
+                        panel.style.borderRadius = '8px';
+                        panel.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                        panel.style.marginBottom = '10px';
+                        panel.style.position = 'relative';
+                        
+                        // Video name
+                        const videoName = document.createElement('h4');
+                        videoName.textContent = filename;
+                        videoName.style.margin = '0 0 15px 0';
+                        videoName.style.fontSize = '16px';
+                        videoName.style.color = '#333';
+                        
+                        // Button container
+                        const buttonContainer = document.createElement('div');
+                        buttonContainer.style.display = 'flex';
+                        buttonContainer.style.gap = '5px';
+                        buttonContainer.style.position = 'relative';
+                        buttonContainer.style.width = '100%';
+                        buttonContainer.style.zIndex = '10';
+                        
+                        // Preview button
+                        const previewBtn = document.createElement('button');
+                        previewBtn.className = 'video-control-btn video-preview-btn';
+                        previewBtn.innerHTML = '<i class="fas fa-play"></i> 미리보기';
+                        previewBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            previewVideo(videoUrl, filename);
+                        });
+                        
+                        // Edit button
+                        const editBtn = document.createElement('button');
+                        editBtn.className = 'video-control-btn video-edit-btn';
+                        editBtn.innerHTML = '<i class="fas fa-edit"></i> 수정';
+                        editBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            editVideoFile(filename);
+                        });
+                        // 관리자만 볼 수 있도록 설정
+                        if (!isAdmin) {
+                            editBtn.style.display = 'none';
+                        }
+                        
+                        // Delete button
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'video-control-btn video-delete-btn';
+                        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> 삭제';
+                        deleteBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            deleteVideoFile(filename);
+                        });
+                        // 관리자만 볼 수 있도록 설정
+                        if (!isAdmin) {
+                            deleteBtn.style.display = 'none';
+                        }
+                        
+                        // Add buttons to container
+                        buttonContainer.appendChild(previewBtn);
+                        buttonContainer.appendChild(editBtn);
+                        buttonContainer.appendChild(deleteBtn);
+                        
+                        // Add elements to panel
+                        panel.appendChild(videoName);
+                        panel.appendChild(buttonContainer);
+                        
+                        // Add panel to list
+                        directVideosList.appendChild(panel);
+                    });
+                    
+                    console.log("직접 관리 패널 생성 완료");
+                } else {
+                    directVideosList.innerHTML = '<p>등록된 영상이 없습니다.</p>';
+                }
+            }
+        }
+
+        // Debug function to check video loading
+        function checkVideoElements() {
+            const videos = document.querySelectorAll('.video-container video');
+            console.log(`Found ${videos.length} video elements`);
+            
+            videos.forEach((video, index) => {
+                console.log(`Video ${index + 1}:`, {
+                    src: video.src,
+                    readyState: video.readyState,
+                    paused: video.paused,
+                    error: video.error
+                });
+                
+                // Try to load metadata
+                video.addEventListener('loadedmetadata', () => {
+                    console.log(`Video ${index + 1} metadata loaded:`, {
+                        duration: video.duration,
+                        width: video.videoWidth,
+                        height: video.videoHeight
+                    });
+                });
+                
+                // Check for errors
+                video.addEventListener('error', () => {
+                    console.error(`Video ${index + 1} error:`, video.error);
+                });
+            });
+        }
+
+        // 비디오 버튼 확인 및 수정 함수
+        function checkVideoButtons() {
+            console.log("🔍 Checking video buttons visibility...");
+            const videoItems = document.querySelectorAll('.video-item');
+            const videoButtons = document.querySelectorAll('.video-button-controls');
+            
+            console.log(`Found ${videoItems.length} video items and ${videoButtons.length} button controls`);
+            
+            if (videoItems.length > 0) {
+                if (videoButtons.length < videoItems.length) {
+                    console.warn('⚠️ Some videos are missing buttons. Fixing the issue...');
+                    showNotification('warning', '<i class="fas fa-tools"></i> 일부 비디오 버튼이 누락되었습니다. 자동으로 수정 중...');
+                    
+                    // 문제 해결을 위해 새로고침
+                    setTimeout(() => {
+                        loadFiles();
+                    }, 2000);
+                } else {
+                    // 가시성 강화를 위해 모든 버튼의 z-index 증가 및 스타일 재설정
+                    videoButtons.forEach(btnContainer => {
+                        btnContainer.style.zIndex = '9999';
+                        btnContainer.style.position = 'relative';
+                        btnContainer.style.display = 'flex';
+                        btnContainer.style.width = '100%';
+                        btnContainer.style.top = 'auto';
+                        btnContainer.style.right = 'auto';
+                        btnContainer.style.marginTop = '10px';
+                        
+                        // 개별 버튼 스타일 강화
+                        const buttons = btnContainer.querySelectorAll('button');
+                        buttons.forEach(btn => {
+                            btn.style.zIndex = '10000';
+                            btn.style.display = 'block';
+                            btn.style.visibility = 'visible';
+                            btn.style.opacity = '1';
+                            btn.style.flex = '1';
+                            btn.style.padding = '8px 12px';
+                            btn.style.fontWeight = 'bold';
+                            btn.style.boxShadow = '0 3px 8px rgba(0,0,0,0.25)';
+                        });
+                    });
+                    
+                    console.log("✅ All video buttons verified and enhanced");
+                }
+            }
+        }
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .board-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .write-btn {
+            padding: 0.8rem 1.5rem;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .write-btn:hover {
+            background: #45a049;
+        }
+        .board-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        .board-table th,
+        .board-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .board-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .board-table tr:hover {
+            background: #f8f9fa;
+        }
+        .post-title {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .post-title:hover {
+            color: #4CAF50;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .pagination a {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .pagination a:hover {
+            background: #f8f9fa;
+        }
+        .pagination .active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .search-box button {
+            padding: 0.8rem 1.5rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .search-box button:hover {
+            background: #45a049;
+        }
+        .post-detail {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .post-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .post-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .post-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .post-content {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .post-file {
+            margin-bottom: 2rem;
+        }
+        .post-file a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .post-file a:hover {
+            text-decoration: underline;
+        }
+        .comments-section {
+            margin-top: 2rem;
+        }
+        .comments-list {
+            margin-bottom: 2rem;
+        }
+        .comment {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .comment-content {
+            line-height: 1.5;
+        }
+        .comment-form {
+            margin-top: 2rem;
+        }
+        .comment-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        .comment-form button {
+            padding: 0.8rem 1.5rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .comment-form button:hover {
+            background: #45a049;
+        }
+        .admin-controls {
+            margin-top: 1rem;
+            text-align: right;
+        }
+        .delete-btn {
+            padding: 0.5rem 1rem;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>게시판</h2>
+            <div class="board-container">
+                <div class="board-header">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
+                        <button onclick="searchPosts()">검색</button>
+                    </div>
+                    <a href="write.html" class="write-btn">글쓰기</a>
+                </div>
+                <table class="board-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%">번호</th>
+                            <th style="width: 40%">제목</th>
+                            <th style="width: 15%">작성자</th>
+                            <th style="width: 15%">작성일</th>
+                            <th style="width: 10%">첨부파일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="postsList">
+                        <!-- 게시글 목록이 여기에 동적으로 추가됩니다 -->
+                    </tbody>
+                </table>
+                <div class="pagination" id="pagination">
+                    <!-- 페이지네이션이 여기에 동적으로 추가됩니다 -->
+                </div>
+
+                <!-- 게시글 상세 보기 -->
+                <div id="postDetail" class="post-detail">
+                    <div class="post-header">
+                        <h3 class="post-title" id="detailTitle"></h3>
+                        <div class="post-meta">
+                            <span id="detailAuthor"></span> | 
+                            <span id="detailDate"></span>
+                        </div>
+                    </div>
+                    <div class="post-content" id="detailContent"></div>
+                    <div class="post-file" id="detailFile"></div>
+                    <div class="admin-controls">
+                        <button class="edit-btn" onclick="editPost()" style="padding: 0.5rem 1rem; background: #ffc107; color: #212529; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">게시글 수정</button>
+                        <button class="delete-btn" onclick="deletePost()">게시글 삭제</button>
+                    </div>
+                    <div class="comments-section">
+                        <h4>댓글</h4>
+                        <div class="comments-list" id="commentsList">
+                            <!-- 댓글 목록이 여기에 동적으로 추가됩니다 -->
+                        </div>
+                        <form class="comment-form" id="commentForm">
+                            <input type="text" id="commentAuthor" placeholder="작성자" required>
+                            <textarea id="commentContent" placeholder="댓글을 입력하세요" required></textarea>
+                            <button type="submit">댓글 작성</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentPage = 1;
+        const postsPerPage = 10;
+        let allPosts = [];
+        let currentPostId = null;
+        let currentUser = null;
+
+        async function loadPosts() {
+            try {
+                const response = await fetch('/api/posts');
+                if (response.ok) {
+                    allPosts = await response.json();
+                    displayPosts();
+                } else {
+                    console.error('게시글을 불러오는데 실패했습니다.');
+                    allPosts = [];
+                    displayPosts();
+                }
+            } catch (error) {
+                console.error('게시글을 불러오는 중 오류가 발생했습니다:', error);
+                allPosts = [];
+                displayPosts();
+            }
+        }
+
+        function displayPosts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredPosts = allPosts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) || 
+                post.content.toLowerCase().includes(searchTerm) ||
+                post.author.toLowerCase().includes(searchTerm)
+            );
+
+            const startIndex = (currentPage - 1) * postsPerPage;
+            const endIndex = startIndex + postsPerPage;
+            const postsToShow = filteredPosts.slice(startIndex, endIndex);
+
+            const postsList = document.getElementById('postsList');
+            postsList.innerHTML = '';
+
+            if (postsToShow.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="5" style="text-align: center;">게시글이 없습니다.</td>
+                `;
+                postsList.appendChild(row);
+            } else {
+                postsToShow.forEach(post => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${post.id}</td>
+                        <td><a href="#" class="post-title" onclick="viewPost(${post.id})">${post.title}</a></td>
+                        <td>${post.author}</td>
+                        <td>${post.date}</td>
+                        <td>${post.file ? '📎' : ''}</td>
+                    `;
+                    postsList.appendChild(row);
+                });
+            }
+
+            displayPagination(filteredPosts.length);
+        }
+
+        function displayPagination(totalPosts) {
+            const totalPages = Math.ceil(totalPosts / postsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            if (totalPages === 0) return;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLink = document.createElement('a');
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                if (i === currentPage) {
+                    pageLink.classList.add('active');
+                }
+                pageLink.onclick = (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    displayPosts();
+                };
+                pagination.appendChild(pageLink);
+            }
+        }
+
+        async function viewPost(postId) {
+            currentPostId = postId;
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            document.getElementById('detailTitle').textContent = post.title;
+            document.getElementById('detailAuthor').textContent = post.author;
+            document.getElementById('detailDate').textContent = post.date;
+            document.getElementById('detailContent').textContent = post.content;
+            
+            const fileElement = document.getElementById('detailFile');
+            if (post.file) {
+                fileElement.innerHTML = `<a href="/uploads/posts/${post.file}" download>📎 ${post.file}</a>`;
+            } else {
+                fileElement.innerHTML = '';
+            }
+
+            // 관리자 권한 확인 및 수정/삭제 버튼 표시/숨김
+            const adminControls = document.querySelector('.admin-controls');
+            if (currentUser && (currentUser.role === 'admin' || currentUser.id === post.author_id)) {
+                // 관리자이거나 작성자인 경우에만 버튼 표시
+                adminControls.style.display = 'block';
+            } else {
+                // 그 외의 경우 버튼 숨김
+                adminControls.style.display = 'none';
+            }
+
+            // 댓글 목록 표시
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '';
+            
+            if (post.comments && post.comments.length > 0) {
+                post.comments.forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <div class="comment-header">
+                            <span>${comment.author}</span>
+                            <span>${comment.date}</span>
+                        </div>
+                        <div class="comment-content">${comment.content}</div>
+                    `;
+                    commentsList.appendChild(commentElement);
+                });
+            } else {
+                commentsList.innerHTML = '<p>댓글이 없습니다.</p>';
+            }
+
+            document.getElementById('postDetail').style.display = 'block';
+            window.scrollTo(0, document.getElementById('postDetail').offsetTop);
+        }
+
+        async function deletePost() {
+            if (!currentPostId) return;
+            
+            if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/${currentPostId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('게시글이 삭제되었습니다.');
+                    document.getElementById('postDetail').style.display = 'none';
+                    loadPosts();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || '게시글 삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 삭제 중 오류가 발생했습니다:', error);
+                alert('게시글 삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        function editPost() {
+            if (!currentPostId) return;
+            
+            const post = allPosts.find(p => p.id === currentPostId);
+            if (!post) return;
+            
+            // 본인 글이 아니고 관리자도 아닌 경우 수정 불가
+            if (currentUser.id !== post.author_id && currentUser.role !== 'admin') {
+                alert('본인이 작성한 글만 수정할 수 있습니다.');
+                return;
+            }
+            
+            // 게시글 수정 페이지로 이동
+            window.location.href = `write.html?edit=${currentPostId}`;
+        }
+
+        document.getElementById('commentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentPostId) return;
+
+            if (!currentUser) {
+                alert('댓글을 작성하려면 로그인이 필요합니다.');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            const content = document.getElementById('commentContent').value;
+
+            try {
+                const formData = new FormData();
+                formData.append('content', content);
+
+                const response = await fetch(`/api/posts/${currentPostId}/comments`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    document.getElementById('commentContent').value = '';
+                    loadPosts();
+                    viewPost(currentPostId);
+                } else {
+                    const data = await response.json();
+                    alert(data.error || '댓글 작성에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('댓글 작성 중 오류가 발생했습니다:', error);
+                alert('댓글 작성 중 오류가 발생했습니다.');
+            }
+        });
+
+        function searchPosts() {
+            currentPage = 1;
+            displayPosts();
+        }
+
+        // 현재 로그인한 사용자 정보 가져오기
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/check-auth');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated || data.is_authenticated) {
+                        currentUser = data.user;
+                        // 댓글 작성자 필드 숨기기
+                        document.getElementById('commentAuthor').style.display = 'none';
+                        // 로그인 상태에 따른 UI 조정
+                        document.querySelector('.write-btn').style.display = 'block';
+                    } else {
+                        currentUser = null;
+                        // 비로그인 상태에서 댓글 작성 제한
+                        document.querySelector('.comment-form').innerHTML = '<p>댓글을 작성하려면 <a href="/login.html">로그인</a>이 필요합니다.</p>';
+                        // 글쓰기 버튼 숨기기
+                        document.querySelector('.write-btn').style.display = 'none';
+                    }
+                } else {
+                    currentUser = null;
+                    // 비로그인 상태에서 댓글 작성 제한
+                    document.querySelector('.comment-form').innerHTML = '<p>댓글을 작성하려면 <a href="/login.html">로그인</a>이 필요합니다.</p>';
+                    // 글쓰기 버튼 숨기기
+                    document.querySelector('.write-btn').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('인증 확인 중 오류가 발생했습니다:', error);
+                currentUser = null;
+            }
+        }
+
+        // 페이지 로드 시 게시글 목록 불러오기 및 인증 확인
+        window.addEventListener('load', async function() {
+            await checkAuth();
+            loadPosts();
+        });
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 

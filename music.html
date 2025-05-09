@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>음악파일 다운로드 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .music-category {
+            margin-bottom: 2rem;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .music-category h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #4CAF50;
+            font-size: 1.5rem;
+        }
+        .file-list {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .file-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .file-name {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .preview-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #28a745;
+        }
+        .preview-btn:hover {
+            background: #218838;
+        }
+        .download-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #007bff;
+        }
+        .download-btn:hover {
+            background: #0056b3;
+        }
+        .audio-preview {
+            display: none;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .no-files {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .upload-form {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .upload-form input[type="file"] {
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        .upload-form button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-form button:hover {
+            background: #0056b3;
+        }
+        .edit-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #ffc107;
+        }
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+        .delete-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #dc3545;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .rename-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #17a2b8;
+        }
+        .rename-btn:hover {
+            background: #138496;
+        }
+        .file-count {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>음악파일 다운로드</h2>
+                <button onclick="loadFiles()" style="padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-sync-alt"></i> 새로고침
+                </button>
+            </div>
+            
+            <div class="music-category" data-category="ai">
+                <h3>AI 음악 <span id="ai-count" class="file-count">(0개 파일)</span></h3>
+                <div class="upload-form">
+                    <form id="ai-upload-form">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="file" name="file" accept=".mp3,.wav" required id="ai-file-input">
+                                <span id="ai-file-name" style="flex: 1; font-size: 14px; color: #666;">선택된 파일 없음</span>
+                            </div>
+                            <button type="submit" id="ai-upload-btn">업로드</button>
+                            <div id="ai-upload-status" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px; font-size: 14px;"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">고백 (Remastered) (Cover) (1).mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '고백 (Remastered) (Cover) (1).mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '고백 (Remastered) (Cover) (1).mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '고백 (Remastered) (Cover) (1).mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/고백 (Remastered) (Cover) (1).mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/고백 (Remastered) (Cover) (1).mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">좁은길 영원한 생명.mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '좁은길 영원한 생명.mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '좁은길 영원한 생명.mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '좁은길 영원한 생명.mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/좁은길 영원한 생명.mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/좁은길 영원한 생명.mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">광풍 앞에.wav</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '광풍 앞에.wav')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '광풍 앞에.wav')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '광풍 앞에.wav')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/광풍 앞에.wav" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/광풍 앞에.wav" type="audio/wav">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">감사의 찬양.mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '감사의 찬양.mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '감사의 찬양.mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '감사의 찬양.mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/감사의 찬양.mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/감사의 찬양.mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">감사의 노래(남여).mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '감사의 노래(남여).mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '감사의 노래(남여).mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '감사의 노래(남여).mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/감사의 노래(남여).mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/감사의 노래(남여).mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">감사의 노래.mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '감사의 노래.mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '감사의 노래.mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '감사의 노래.mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/감사의 노래.mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/감사의 노래.mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">감사의 찬 양.mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '감사의 찬 양.mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '감사의 찬 양.mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '감사의 찬 양.mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/감사의 찬 양.mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/감사의 찬 양.mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">더더더.mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '더더더.mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '더더더.mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '더더더.mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/더더더.mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/더더더.mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">길.wav</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/ai', '길.wav')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/ai', '길.wav')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/ai', '길.wav')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/ai/길.wav" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/ai/길.wav" type="audio/wav">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="music-category" data-category="mr">
+                <h3>MR 음악 <span id="mr-count" class="file-count">(0개 파일)</span></h3>
+                <div class="upload-form">
+                    <form id="mr-upload-form">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="file" name="file" accept=".mp3,.wav" required id="mr-file-input">
+                                <span id="mr-file-name" style="flex: 1; font-size: 14px; color: #666;">선택된 파일 없음</span>
+                            </div>
+                            <button type="submit" id="mr-upload-btn">업로드</button>
+                            <div id="mr-upload-status" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px; font-size: 14px;"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">주님의사랑빛나리MR.mp3</span>
+                            <div class="file-actions">
+                                <button onclick="togglePreview(this)" class="preview-btn">미리듣기</button>
+                                <button onclick="simpleRenameFile('music/mr', '주님의사랑빛나리MR.mp3')" class="rename-btn">파일명 변경</button>
+                                <button onclick="editFile('music/mr', '주님의사랑빛나리MR.mp3')" class="edit-btn">수정</button>
+                                <button onclick="deleteFile('music/mr', '주님의사랑빛나리MR.mp3')" class="delete-btn">삭제</button>
+                                <a href="uploads/music/mr/주님의사랑빛나리MR.mp3" download class="download-btn">다운로드</a>
+                            </div>
+                        </div>
+                        <audio class="audio-preview" controls>
+                            <source src="uploads/music/mr/주님의사랑빛나리MR.mp3" type="audio/mpeg">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="music-category" data-category="live">
+                <h3>라이브 음악 <span id="live-count" class="file-count">(0개 파일)</span></h3>
+                <div class="upload-form">
+                    <form id="live-upload-form">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="file" name="file" accept=".mp3,.wav" required id="live-file-input">
+                                <span id="live-file-name" style="flex: 1; font-size: 14px; color: #666;">선택된 파일 없음</span>
+                            </div>
+                            <button type="submit" id="live-upload-btn">업로드</button>
+                            <div id="live-upload-status" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px; font-size: 14px;"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="file-list">
+                    <p class="no-files">업로드된 파일이 없습니다.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentUser = null;
+        let isAdmin = false;
+
+        // 페이지 로드 시 사용자 정보 확인
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            loadFiles();
+
+            // AI 음악 업로드 폼 이벤트 처리
+            document.getElementById('ai-upload-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                uploadFile('music/ai', this, 'ai-upload-status', 'ai-upload-btn');
+            });
+
+            // AI 파일 선택 시 이름 표시
+            document.getElementById('ai-file-input').addEventListener('change', function() {
+                showSelectedFileName('ai-file-name', this);
+            });
+
+            // MR 음악 업로드 폼 이벤트 처리
+            document.getElementById('mr-upload-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                uploadFile('music/mr', this, 'mr-upload-status', 'mr-upload-btn');
+            });
+
+            // MR 파일 선택 시 이름 표시
+            document.getElementById('mr-file-input').addEventListener('change', function() {
+                showSelectedFileName('mr-file-name', this);
+            });
+
+            // Live 음악 업로드 폼 이벤트 처리
+            document.getElementById('live-upload-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                uploadFile('music/live', this, 'live-upload-status', 'live-upload-btn');
+            });
+
+            // Live 파일 선택 시 이름 표시
+            document.getElementById('live-file-input').addEventListener('change', function() {
+                showSelectedFileName('live-file-name', this);
+            });
+            
+            // 정적 HTML에 있는 다운로드 버튼 권한 적용
+            applyDownloadPermissions();
+        });
+        
+        // 정적 HTML의 다운로드 버튼 권한 적용
+        function applyDownloadPermissions() {
+            if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new')) {
+                // 일반회원과 신입회원은 다운로드 버튼 숨김
+                const downloadButtons = document.querySelectorAll('.download-btn');
+                downloadButtons.forEach(button => {
+                    button.style.display = 'none';
+                });
+                console.log('일반회원/신입회원 권한 적용: 다운로드 버튼 숨김');
+            }
+        }
+
+        // 사용자 인증 확인 함수
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/check-auth');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated || data.is_authenticated) {
+                        currentUser = data.user;
+                        isAdmin = currentUser.role === 'admin';
+                        console.log("로그인 상태: 관리자 권한 =", isAdmin);
+                        
+                        // 사용자 권한에 따라 다운로드 버튼 표시 여부 설정
+                        applyDownloadPermissions();
+                    } else {
+                        currentUser = null;
+                        isAdmin = false;
+                        console.log("로그인되지 않은 상태");
+                    }
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                    console.log("인증 확인 실패");
+                }
+            } catch (error) {
+                console.error('인증 확인 중 오류 발생:', error);
+                currentUser = null;
+                isAdmin = false;
+            }
+        }
+
+        function togglePreview(button) {
+            const fileItem = button.closest('.file-item');
+            const audioPreview = fileItem.querySelector('.audio-preview');
+            const sourceElement = fileItem.querySelector('.audio-preview source');
+            const audioSrc = sourceElement ? sourceElement.src : null;
+            const allAudioPreviews = document.querySelectorAll('.audio-preview');
+            
+            console.log('미리듣기 요청:', {
+                fileItem: fileItem,
+                audioFound: !!audioPreview,
+                audioSrc: audioSrc,
+                audioVisible: audioPreview ? audioPreview.style.display : 'N/A'
+            });
+            
+            // 다른 모든 미리듣기 중지
+            allAudioPreviews.forEach(audio => {
+                if (audio !== audioPreview) {
+                    audio.pause();
+                    audio.style.display = 'none';
+                }
+            });
+            
+            // 현재 미리듣기 토글
+            if (audioPreview.style.display === 'none' || !audioPreview.style.display) {
+                audioPreview.style.display = 'block';
+                
+                // 오디오 로드 상태 확인 및 재생 시도
+                const playAudio = function() {
+                    console.log('오디오 재생 시도');
+                    audioPreview.play().then(() => {
+                        console.log('오디오 재생 시작됨');
+                    }).catch(err => {
+                        console.error('오디오 재생 실패:', err);
+                        alert('오디오 재생에 실패했습니다. 파일을 확인해주세요.');
+                    });
+                };
+                
+                if (audioPreview.readyState >= 2) {
+                    // 이미 로드된 경우
+                    playAudio();
+                } else {
+                    // 아직 로드되지 않은 경우
+                    audioPreview.addEventListener('canplay', playAudio, { once: true });
+                    
+                    // 오류 처리
+                    audioPreview.addEventListener('error', function(e) {
+                        console.error('오디오 로드 오류:', audioPreview.error);
+                        console.error('오류 발생 상세정보:', e);
+                        alert('오디오 파일을 로드할 수 없습니다. 경로: ' + (audioSrc || '알 수 없음'));
+                    }, { once: true });
+                    
+                    // 로드 시작 시점 출력
+                    console.log('오디오 로드 시작:', new Date().toISOString());
+                }
+            } else {
+                audioPreview.style.display = 'none';
+                audioPreview.pause();
+            }
+        }
+
+        function showSelectedFileName(elementId, input) {
+            const fileNameElement = document.getElementById(elementId);
+            if (input.files && input.files[0]) {
+                fileNameElement.textContent = input.files[0].name;
+                fileNameElement.style.color = '#28a745'; // 녹색으로 변경
+            } else {
+                fileNameElement.textContent = '선택된 파일 없음';
+                fileNameElement.style.color = '#666';
+            }
+        }
+
+        function uploadFile(category, form, statusElementId, buttonElementId) {
+            console.group('파일 업로드 시작');
+            console.log('카테고리:', category);
+            
+            const statusElement = document.getElementById(statusElementId);
+            const submitButton = document.getElementById(buttonElementId);
+            
+            if (!statusElement || !submitButton) {
+                console.error('필요한 DOM 요소를 찾을 수 없습니다:', {
+                    statusElementId,
+                    buttonElementId,
+                    statusElementExists: !!statusElement,
+                    submitButtonExists: !!submitButton
+                });
+                console.groupEnd();
+                return;
+            }
+            
+            // 업로드 시작 상태 표시
+            statusElement.textContent = '업로드 중...';
+            statusElement.style.display = 'block';
+            statusElement.style.backgroundColor = '#17a2b8';
+            statusElement.style.color = 'white';
+            submitButton.disabled = true;
+            
+            const formData = new FormData(form);
+            formData.append('category', category);
+            
+            // 선택한 파일 확인
+            const fileInput = form.querySelector('input[type="file"]');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                statusElement.textContent = '파일을 선택해주세요.';
+                statusElement.style.display = 'block';
+                statusElement.style.backgroundColor = '#dc3545';
+                submitButton.disabled = false;
+                
+                console.error('파일이 선택되지 않았습니다.');
+                console.groupEnd();
+                return;
+            }
+            
+            const selectedFile = fileInput.files[0];
+            console.log('업로드 파일 정보:', {
+                name: selectedFile.name,
+                size: selectedFile.size,
+                type: selectedFile.type,
+                category: category
+            });
+            
+            // 서버에 업로드 요청
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('서버 응답 코드:', response.status);
+                console.log('응답 헤더:', Object.fromEntries([...response.headers.entries()]));
+                
+                // 응답 원문 먼저 확인 후 JSON으로 파싱
+                return response.text().then(text => {
+                    console.log('응답 원문:', text);
+                    try {
+                        // 유효한 JSON인 경우에만 파싱
+                        if (text.trim()) {
+                            return { ok: response.ok, status: response.status, data: JSON.parse(text) };
+                        } else {
+                            return { ok: response.ok, status: response.status, data: null };
+                        }
+                    } catch (e) {
+                        console.error('JSON 파싱 오류:', e);
+                        return { ok: response.ok, status: response.status, data: null, error: '응답을 파싱할 수 없습니다' };
+                    }
+                });
+            })
+            .then(result => {
+                if (!result.ok) {
+                    throw new Error(`서버 오류: ${result.status}${result.data?.error ? ' - ' + result.data.error : ''}`);
+                }
+                
+                console.log('서버 응답 데이터:', result.data);
+                const data = result.data;
+                
+                if (data && data.success) {
+                    // 성공 메시지 표시
+                    statusElement.textContent = '파일이 성공적으로 업로드되었습니다.';
+                    statusElement.style.backgroundColor = '#28a745';
+                    
+                    // 경고 메시지가 있다면 표시
+                    if (data.warning) {
+                        console.warn('서버 경고:', data.warning);
+                        statusElement.textContent += ` (주의: ${data.warning})`;
+                    }
+                    
+                    // 폼 초기화
+                    form.reset();
+                    
+                    // 파일 목록 새로고침
+                    console.log('파일 업로드 완료, 목록 새로고침');
+                    loadFiles();
+                    
+                    // 파일 이름 초기화
+                    const categoryPrefix = statusElementId.split('-')[0];
+                    const fileNameElement = document.getElementById(`${categoryPrefix}-file-name`);
+                    if (fileNameElement) {
+                        fileNameElement.textContent = '선택된 파일 없음';
+                        fileNameElement.style.color = '#666';
+                    }
+                    
+                    // 3초 후 상태 메시지 숨기기
+                    setTimeout(() => {
+                        statusElement.style.display = 'none';
+                        submitButton.disabled = false;
+                        console.log('업로드 상태 메시지 숨김');
+                        console.groupEnd();
+                    }, 3000);
+                } else {
+                    // 오류 메시지 표시
+                    statusElement.textContent = '파일 업로드에 실패했습니다: ' + (data.error || '알 수 없는 오류');
+                    statusElement.style.backgroundColor = '#dc3545';
+                    submitButton.disabled = false;
+                    
+                    console.error('업로드 실패:', data.error);
+                    
+                    // 5초 후 오류 메시지 숨기기
+                    setTimeout(() => {
+                        statusElement.style.display = 'none';
+                        console.log('오류 메시지 숨김');
+                        console.groupEnd();
+                    }, 5000);
+                }
+            })
+            .catch(error => {
+                console.error('업로드 중 오류:', error);
+                statusElement.textContent = '파일 업로드 중 오류가 발생했습니다.';
+                statusElement.style.backgroundColor = '#dc3545';
+                submitButton.disabled = false;
+                
+                // 5초 후 오류 메시지 숨기기
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                    console.log('오류 메시지 숨김');
+                    console.groupEnd();
+                }, 5000);
+            });
+        }
+
+        function loadFiles() {
+            // 로딩 상태 표시
+            const categories = ['ai', 'mr', 'live'];
+            categories.forEach(category => {
+                const categoryList = document.querySelector(`.music-category[data-category="${category}"] .file-list`);
+                if (categoryList) {
+                    categoryList.innerHTML = '<p style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> 파일 목록을 불러오는 중...</p>';
+                }
+            });
+            
+            console.group('파일 목록 로딩');
+            
+            // 서버에 파일 목록 요청 - 캐시 방지를 위한 타임스탬프 추가
+            const timestamp = new Date().getTime();
+            fetch(`/check_files?t=${timestamp}&cache=${Math.random()}`, {
+                method: 'GET',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
+            })
+            .then(response => {
+                console.log('서버 응답 상태:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("파일 목록 데이터 수신됨");
+                
+                // 응답 형식 확인
+                if (data.status === 'error') {
+                    throw new Error(data.error || '알 수 없는 오류가 발생했습니다.');
+                }
+                
+                // 이전 버전과의 호환성을 위한 처리
+                let files = data;
+                if (data.status === 'success') {
+                    // 새 형식에서는 music, scores, videos 키가 최상위 객체 아래에 있음
+                    files = {
+                        music: data.music,
+                        scores: data.scores,
+                        videos: data.videos
+                    };
+                }
+                
+                // 카테고리별 파일 개수 로깅
+                const musicFileCount = {
+                    ai: files.music?.ai?.length || 0,
+                    mr: files.music?.mr?.length || 0,
+                    live: files.music?.live?.length || 0
+                };
+                console.log('음악 파일 개수:', musicFileCount);
+                
+                // 파일 개수 표시 업데이트
+                categories.forEach(category => {
+                    const countElement = document.getElementById(`${category}-count`);
+                    if (countElement) {
+                        const count = files.music?.[category]?.length || 0;
+                        countElement.textContent = `(${count}개 파일)`;
+                    }
+                });
+                
+                // 각 카테고리별로 파일 목록 업데이트
+                categories.forEach(category => {
+                    const categoryList = document.querySelector(`.music-category[data-category="${category}"] .file-list`);
+                    if (categoryList) {
+                        categoryList.innerHTML = '';
+                        
+                        if (files.music && files.music[category] && files.music[category].length > 0) {
+                            // 카테고리별 파일 목록 로깅
+                            console.log(`${category} 카테고리 파일 목록:`, files.music[category]);
+                            
+                            // 파일 목록 렌더링
+                            files.music[category].forEach(file => {
+                                try {
+                                    const fileItem = createFileItem(category, file);
+                                    categoryList.appendChild(fileItem);
+                                } catch (error) {
+                                    console.error(`파일 항목 생성 중 오류 (${file}):`, error);
+                                    // 오류가 있더라도 다른 파일 계속 처리
+                                }
+                            });
+                        } else {
+                            categoryList.innerHTML = '<p class="no-files">업로드된 파일이 없습니다.</p>';
+                        }
+                    }
+                });
+                
+                console.log("파일 목록 업데이트 완료");
+                console.groupEnd();
+            })
+            .catch(error => {
+                console.error('파일 목록 로드 중 오류:', error);
+                
+                // 오류 메시지 표시
+                categories.forEach(category => {
+                    const categoryList = document.querySelector(`.music-category[data-category="${category}"] .file-list`);
+                    if (categoryList) {
+                        categoryList.innerHTML = `
+                            <p style="color: #dc3545; text-align: center; padding: 20px;">
+                                <i class="fas fa-exclamation-circle"></i> 
+                                파일 목록을 불러오는데 실패했습니다: ${error.message}
+                                <br><br>
+                                <button onclick="loadFiles()" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    <i class="fas fa-sync-alt"></i> 다시 시도
+                                </button>
+                            </p>
+                        `;
+                    }
+                });
+                
+                console.groupEnd();
+            });
+        }
+
+        function createFileItem(category, file) {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'file-info';
+            
+            const fileName = document.createElement('span');
+            fileName.className = 'file-name';
+            fileName.textContent = file;
+            
+            const fileActions = document.createElement('div');
+            fileActions.className = 'file-actions';
+            
+            // 미리듣기 버튼 (모든 사용자에게 표시)
+            const previewButton = document.createElement('button');
+            previewButton.className = 'preview-btn';
+            previewButton.textContent = '미리듣기';
+            previewButton.onclick = function() {
+                togglePreview(this);
+            };
+            
+            // 파일명 변경 버튼 (관리자만 표시)
+            const renameButton = document.createElement('button');
+            renameButton.className = 'rename-btn';
+            renameButton.textContent = '파일명 변경';
+            renameButton.onclick = function() {
+                simpleRenameFile(category, file);
+            };
+            if (!isAdmin) {
+                renameButton.style.display = 'none';
+            }
+            
+            // 수정 버튼 (관리자만 표시)
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-btn';
+            editButton.textContent = '수정';
+            editButton.onclick = function() {
+                editFile(category, file);
+            };
+            if (!isAdmin) {
+                editButton.style.display = 'none';
+            }
+            
+            // 삭제 버튼 (관리자만 표시)
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-btn';
+            deleteButton.textContent = '삭제';
+            deleteButton.onclick = function() {
+                deleteFile(category, file);
+            };
+            if (!isAdmin) {
+                deleteButton.style.display = 'none';
+            }
+            
+            // 다운로드 버튼 (관리자와 특별회원만 표시)
+            const downloadButton = document.createElement('a');
+            downloadButton.className = 'download-btn';
+            downloadButton.textContent = '다운로드';
+            
+            // 인코딩된 파일 경로
+            const filePath = `uploads/${category}/${encodeURIComponent(file)}`;
+            console.log("생성된 파일 경로:", filePath);
+            
+            downloadButton.href = filePath;
+            downloadButton.download = file;
+            
+            // 일반회원과 신입회원은 다운로드 버튼 숨김
+            if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new')) {
+                downloadButton.style.display = 'none';
+            }
+            
+            // 버튼들을 fileActions에 추가
+            fileActions.appendChild(previewButton);
+            fileActions.appendChild(renameButton);
+            fileActions.appendChild(editButton);
+            fileActions.appendChild(deleteButton);
+            fileActions.appendChild(downloadButton);
+            
+            // fileInfo에 추가
+            fileInfo.appendChild(fileName);
+            fileInfo.appendChild(fileActions);
+            
+            // audio 태그 생성
+            const audio = document.createElement('audio');
+            audio.className = 'audio-preview';
+            audio.controls = true;
+            
+            const source = document.createElement('source');
+            source.src = filePath;
+            source.type = file.toLowerCase().endsWith('.mp3') ? 'audio/mpeg' : 'audio/wav';
+            
+            // 디버깅 로그 추가
+            console.log(`오디오 소스 경로: ${source.src}, 타입: ${source.type}`);
+            
+            audio.appendChild(source);
+            
+            // 모두 item에 추가
+            item.appendChild(fileInfo);
+            item.appendChild(audio);
+            
+            return item;
+        }
+
+        function deleteFile(category, filename) {
+            if (!confirm('정말로 이 파일을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            // 이미 인코딩된 파일명인지 확인 및 처리
+            let encodedFilename;
+            try {
+                // 이중 인코딩 방지
+                decodeURIComponent(filename);
+                // decode가 성공하면 이미 인코딩된 상태이므로 그대로 사용
+                encodedFilename = filename;
+            } catch (e) {
+                // decode에 실패하면 인코딩되지 않은 상태이므로 인코딩 필요
+                encodedFilename = encodeURIComponent(filename);
+            }
+            
+            console.group('파일 삭제 요청');
+            console.log('카테고리:', category);
+            console.log('파일명:', filename);
+            console.log('인코딩된 파일명:', encodedFilename);
+            
+            const deleteUrl = `/delete/${category}/${encodedFilename}`;
+            console.log('요청 URL:', deleteUrl);
+
+            fetch(deleteUrl, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                console.log('서버 응답 상태:', response.status, response.statusText);
+                if (!response.ok) {
+                    console.error('서버 오류:', response.status, response.statusText);
+                    throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('서버 응답 데이터:', data);
+                if (data.success) {
+                    console.log('파일 삭제 성공');
+                    alert('파일이 삭제되었습니다.');
+                    loadFiles();
+                } else {
+                    console.error('파일 삭제 실패:', data.error);
+                    alert('파일 삭제에 실패했습니다: ' + data.error);
+                }
+                console.groupEnd();
+            })
+            .catch(error => {
+                console.error('파일 삭제 중 오류:', error);
+                alert('파일 삭제 중 오류가 발생했습니다: ' + error.message);
+                console.groupEnd();
+            });
+        }
+
+        function editFile(category, filename) {
+            // 파일 선택 대화상자 및 진행 상태 표시 모달 생성
+            const modalId = 'edit-file-modal';
+            let modal = document.getElementById(modalId);
+            
+            // 디버깅 정보 출력
+            console.group('파일 수정 시작');
+            console.log('카테고리:', category);
+            console.log('파일명:', filename);
+            
+            // 모달이 없으면 새로 생성
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = modalId;
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '9999';
+                
+                const modalContent = document.createElement('div');
+                modalContent.style.backgroundColor = 'white';
+                modalContent.style.padding = '20px';
+                modalContent.style.borderRadius = '8px';
+                modalContent.style.width = '400px';
+                modalContent.style.maxWidth = '80%';
+                modalContent.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                
+                const modalHeader = document.createElement('div');
+                modalHeader.style.marginBottom = '15px';
+                modalHeader.style.display = 'flex';
+                modalHeader.style.justifyContent = 'space-between';
+                modalHeader.style.alignItems = 'center';
+                
+                const modalTitle = document.createElement('h3');
+                modalTitle.id = `${modalId}-title`;
+                modalTitle.textContent = '파일 수정';
+                modalTitle.style.margin = '0';
+                
+                const closeButton = document.createElement('button');
+                closeButton.innerHTML = '&times;';
+                closeButton.style.background = 'none';
+                closeButton.style.border = 'none';
+                closeButton.style.fontSize = '24px';
+                closeButton.style.cursor = 'pointer';
+                closeButton.style.padding = '0 5px';
+                closeButton.onclick = function() {
+                    modal.style.display = 'none';
+                    console.log('모달 닫기');
+                    console.groupEnd();
+                };
+                
+                modalHeader.appendChild(modalTitle);
+                modalHeader.appendChild(closeButton);
+                
+                const modalBody = document.createElement('div');
+                modalBody.id = `${modalId}-body`;
+                
+                const fileNameInfo = document.createElement('p');
+                fileNameInfo.id = `${modalId}-filename`;
+                fileNameInfo.textContent = `현재 파일: ${filename}`;
+                
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.id = `${modalId}-input`;
+                fileInput.accept = '.mp3,.wav';
+                fileInput.style.width = '100%';
+                fileInput.style.marginBottom = '15px';
+                
+                const statusInfo = document.createElement('div');
+                statusInfo.id = `${modalId}-status`;
+                statusInfo.style.display = 'none';
+                statusInfo.style.padding = '10px';
+                statusInfo.style.borderRadius = '4px';
+                statusInfo.style.marginBottom = '15px';
+                
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = '취소';
+                cancelButton.style.padding = '8px 16px';
+                cancelButton.style.marginRight = '10px';
+                cancelButton.style.background = '#6c757d';
+                cancelButton.style.color = 'white';
+                cancelButton.style.border = 'none';
+                cancelButton.style.borderRadius = '4px';
+                cancelButton.style.cursor = 'pointer';
+                cancelButton.onclick = function() {
+                    modal.style.display = 'none';
+                    console.log('취소 버튼 클릭');
+                    console.groupEnd();
+                };
+                
+                const submitButton = document.createElement('button');
+                submitButton.id = `${modalId}-submit`;
+                submitButton.textContent = '수정하기';
+                submitButton.style.padding = '8px 16px';
+                submitButton.style.background = '#007bff';
+                submitButton.style.color = 'white';
+                submitButton.style.border = 'none';
+                submitButton.style.borderRadius = '4px';
+                submitButton.style.cursor = 'pointer';
+                submitButton.disabled = true;
+                
+                const modalFooter = document.createElement('div');
+                modalFooter.style.display = 'flex';
+                modalFooter.style.justifyContent = 'flex-end';
+                modalFooter.appendChild(cancelButton);
+                modalFooter.appendChild(submitButton);
+                
+                modalBody.appendChild(fileNameInfo);
+                modalBody.appendChild(fileInput);
+                modalBody.appendChild(statusInfo);
+                
+                modalContent.appendChild(modalHeader);
+                modalContent.appendChild(modalBody);
+                modalContent.appendChild(modalFooter);
+                
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+                
+                // 파일 선택 시 제출 버튼 활성화
+                fileInput.addEventListener('change', function() {
+                    const hasFile = this.files && this.files.length > 0;
+                    submitButton.disabled = !hasFile;
+                    
+                    if (hasFile) {
+                        console.log('선택된 파일:', this.files[0].name);
+                    }
+                });
+                
+                // 제출 버튼 클릭 시 파일 수정 처리
+                submitButton.addEventListener('click', function() {
+                    handleFileEdit(modalId, category, filename);
+                });
+            } else {
+                // 모달이 이미 존재하면 정보 업데이트
+                document.getElementById(`${modalId}-filename`).textContent = `현재 파일: ${filename}`;
+                document.getElementById(`${modalId}-input`).value = '';
+                document.getElementById(`${modalId}-status`).style.display = 'none';
+                document.getElementById(`${modalId}-submit`).disabled = true;
+                console.log('기존 모달 재사용');
+            }
+            
+            // 모달 표시
+            modal.style.display = 'flex';
+        }
+
+        function handleFileEdit(modalId, category, filename) {
+            console.group('파일 수정 시작');
+            console.log('수정 요청 정보:', { 모달ID: modalId, 카테고리: category, 파일명: filename });
+            
+            const input = document.getElementById(`${modalId}-input`);
+            const statusInfo = document.getElementById(`${modalId}-status`);
+            const submitButton = document.getElementById(`${modalId}-submit`);
+            
+            if (!input || !statusInfo || !submitButton) {
+                console.error('필요한 DOM 요소를 찾을 수 없습니다.');
+                alert('내부 오류가 발생했습니다. 페이지를 새로고침하고 다시 시도해주세요.');
+                console.groupEnd();
+                return;
+            }
+            
+            const file = input.files[0];
+            
+            if (!file) {
+                statusInfo.textContent = '파일을 선택해주세요.';
+                statusInfo.style.display = 'block';
+                statusInfo.style.backgroundColor = '#dc3545';
+                statusInfo.style.color = 'white';
+                console.log('파일이 선택되지 않음');
+                console.groupEnd();
+                return;
+            }
+            
+            // 파일 유효성 검사
+            const validExtensions = ['.mp3', '.wav'];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validExtensions.includes(ext)) {
+                statusInfo.textContent = '허용되지 않는 파일 형식입니다. MP3 또는 WAV 파일만 업로드 가능합니다.';
+                statusInfo.style.display = 'block';
+                statusInfo.style.backgroundColor = '#dc3545';
+                statusInfo.style.color = 'white';
+                console.log('허용되지 않는 파일 형식:', ext);
+                console.groupEnd();
+                return;
+            }
+            
+            // 상태 표시 초기화
+            statusInfo.textContent = '파일 업로드 중...';
+            statusInfo.style.display = 'block';
+            statusInfo.style.backgroundColor = '#17a2b8';
+            statusInfo.style.color = 'white';
+            submitButton.disabled = true;
+            
+            // FormData 생성
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // 인코딩된 URL 생성
+            const encodedFilename = encodeURIComponent(filename);
+            const requestUrl = `/edit/${category}/${encodedFilename}`;
+            
+            console.log('파일 수정 요청 URL:', requestUrl);
+            console.log('수정할 파일:', file.name);
+            
+            // 서버에 요청 전송
+            fetch(requestUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('서버 응답 코드:', response.status);
+                console.log('응답 헤더:', Object.fromEntries([...response.headers.entries()]));
+                
+                // 응답 원문 먼저 확인 후 JSON으로 파싱
+                return response.text().then(text => {
+                    console.log('응답 원문:', text);
+                    try {
+                        // 유효한 JSON인 경우에만 파싱
+                        if (text.trim()) {
+                            return { ok: response.ok, status: response.status, data: JSON.parse(text) };
+                        } else {
+                            return { ok: response.ok, status: response.status, data: null };
+                        }
+                    } catch (e) {
+                        console.error('JSON 파싱 오류:', e);
+                        return { ok: response.ok, status: response.status, data: null, error: '응답을 파싱할 수 없습니다' };
+                    }
+                });
+            })
+            .then(result => {
+                if (!result.ok) {
+                    throw new Error(`서버 오류: ${result.status}${result.data?.error ? ' - ' + result.data.error : ''}`);
+                }
+                
+                console.log('서버 응답 데이터:', result.data);
+                const data = result.data;
+                
+                if (data && data.success) {
+                    // 성공 상태 표시
+                    statusInfo.textContent = '파일이 성공적으로 수정되었습니다.';
+                    statusInfo.style.backgroundColor = '#28a745';
+                    
+                    // 파일명 정보 표시
+                    if (data.filename && data.filename !== filename) {
+                        statusInfo.textContent += ` (새 파일명: ${data.filename})`;
+                    }
+                    
+                    // 2초 후 모달 닫기
+                    setTimeout(() => {
+                        document.getElementById(modalId).style.display = 'none';
+                        
+                        // 강제로 데이터 캐시를 무시하고 서버에서 새로운 파일 목록 가져오기
+                        console.log('파일 목록 강제 새로고침 중...');
+                        fetch('/check_files?force=true&t=' + new Date().getTime(), {
+                            method: 'GET',
+                            headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('새 파일 목록 받음, 화면 갱신 중...');
+                            // 파일 목록 새로고침
+                            loadFiles();
+                            console.log('파일 수정 완료 및 목록 새로고침 완료');
+                            console.groupEnd();
+                        })
+                        .catch(error => {
+                            console.error('파일 목록 강제 새로고침 중 오류:', error);
+                            // 오류가 발생해도 일반 새로고침 시도
+                            loadFiles();
+                            console.groupEnd();
+                        });
+                    }, 2000);
+                } else {
+                    // 오류 상태 표시
+                    statusInfo.textContent = data.error || '파일 수정 중 오류가 발생했습니다.';
+                    statusInfo.style.backgroundColor = '#dc3545';
+                    submitButton.disabled = false;
+                    console.error('파일 수정 실패:', data.error);
+                    console.groupEnd();
+                }
+            })
+            .catch(error => {
+                // 네트워크 오류 등 예외 처리
+                statusInfo.textContent = '파일 수정 중 오류가 발생했습니다: ' + error.message;
+                statusInfo.style.backgroundColor = '#dc3545';
+                submitButton.disabled = false;
+                console.error('파일 수정 요청 실패:', error);
+                console.groupEnd();
+            });
+        }
+
+        function simpleRenameFile(category, filename) {
+            console.group('간소화된 파일명 변경 시작');
+            console.log('카테고리:', category);
+            console.log('원본 파일명:', filename);
+            
+            // 새 파일명 입력받기
+            const newFilename = prompt(`'${filename}' 파일의 새 이름을 입력하세요.\n(확장자는 자동으로 유지됩니다.)`, filename.split('.')[0]);
+            
+            // 취소 또는 빈 문자열 입력 시 중단
+            if (!newFilename || newFilename.trim() === '') {
+                console.log('파일명 변경 취소됨');
+                console.groupEnd();
+                return;
+            }
+            
+            // 파일명에 포함할 수 없는 특수문자 검사
+            const invalidChars = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', '&'];
+            let hasInvalidChars = false;
+            let invalidChar = '';
+            
+            for (const char of invalidChars) {
+                if (newFilename.includes(char)) {
+                    hasInvalidChars = true;
+                    invalidChar = char;
+                    break;
+                }
+            }
+            
+            if (hasInvalidChars) {
+                alert(`파일명에 '${invalidChar}' 문자는 사용할 수 없습니다.`);
+                console.log(`유효하지 않은 문자 포함됨: ${invalidChar}`);
+                console.groupEnd();
+                return;
+            }
+            
+            // 확장자 필요여부 확인
+            let finalNewFilename = newFilename;
+            if (!finalNewFilename.includes('.') && filename.includes('.')) {
+                const extension = filename.split('.').pop();
+                finalNewFilename = `${finalNewFilename}.${extension}`;
+                console.log('확장자 추가됨. 최종 파일명:', finalNewFilename);
+            }
+            
+            // 파일명 길이 확인
+            if (finalNewFilename.length > 255) {
+                alert('파일명이 너무 깁니다. 255자 이하로 입력해주세요.');
+                console.log('파일명이 너무 김:', finalNewFilename.length);
+                console.groupEnd();
+                return;
+            }
+            
+            // 서버에 요청 보내기
+            const encodedFilename = encodeURIComponent(filename);
+            const requestUrl = `/rename-file/${category}/${encodedFilename}`;
+            
+            console.log('파일명 변경 요청 URL:', requestUrl);
+            console.log('변경할 파일명:', finalNewFilename);
+            
+            // 확인 메시지 표시
+            if (!confirm(`파일명을 변경하시겠습니까?\n\n${filename} → ${finalNewFilename}`)) {
+                console.log('사용자가 취소함');
+                console.groupEnd();
+                return;
+            }
+            
+            // 서버 요청 전송
+            fetch(requestUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    new_filename: finalNewFilename
+                })
+            })
+            .then(response => {
+                console.log('서버 응답 코드:', response.status);
+                console.log('응답 헤더:', Object.fromEntries([...response.headers.entries()]));
+                
+                // 응답 원문을 먼저 확인
+                return response.text().then(text => {
+                    console.log('응답 원문:', text);
+                    
+                    // 빈 응답 처리
+                    if (!text.trim()) {
+                        return { 
+                            ok: response.ok, 
+                            status: response.status,
+                            data: null 
+                        };
+                    }
+                    
+                    // JSON 파싱 시도
+                    try {
+                        const data = JSON.parse(text);
+                        return { 
+                            ok: response.ok, 
+                            status: response.status,
+                            data: data
+                        };
+                    } catch (e) {
+                        console.error('JSON 파싱 오류:', e);
+                        return {
+                            ok: response.ok,
+                            status: response.status,
+                            error: '응답을 파싱할 수 없습니다: ' + e.message,
+                            data: null
+                        };
+                    }
+                });
+            })
+            .then(result => {
+                if (!result.ok) {
+                    console.error('서버 오류:', result.status);
+                    console.error('응답 데이터:', result.data);
+                    throw new Error('서버 오류: ' + result.status + 
+                        (result.data?.error ? ' - ' + result.data.error : ''));
+                }
+                
+                // 응답 데이터 처리
+                const data = result.data;
+                if (data && data.success) {
+                    // 성공 시 알림 표시
+                    alert(`파일명이 성공적으로 변경되었습니다.\n${filename} → ${data.filename || finalNewFilename}`);
+                    
+                    // 파일 목록 새로고침
+                    loadFiles();
+                } else {
+                    // 오류 시 알림 표시
+                    const errorMsg = data?.error || '알 수 없는 오류';
+                    alert('파일명 변경 실패: ' + errorMsg);
+                    console.error('파일명 변경 실패:', errorMsg);
+                }
+                
+                console.groupEnd();
+            })
+            .catch(error => {
+                console.error('파일명 변경 요청 중 오류:', error);
+                alert('파일명 변경 중 오류가 발생했습니다: ' + error.message);
+                console.groupEnd();
+            });
+        }
+
+        // 업로드 폼 표시 여부 설정 - 관리자만 표시
+        function updateUploadForms() {
+            const uploadForms = document.querySelectorAll('.upload-form');
+            uploadForms.forEach(form => {
+                if (isAdmin) {
+                    form.style.display = 'block';
+                } else {
+                    form.style.display = 'none';
+                }
+            });
+        }
+
+        // 페이지가 로드된 후 초기화 함수 호출
+        window.addEventListener('load', function() {
+            // 파일 로드는 이미 checkAuth에서 호출됨
+            updateUploadForms();
+        });
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 

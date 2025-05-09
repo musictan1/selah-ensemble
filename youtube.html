@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유튜브 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .youtube-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .video-item {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .video-item:hover {
+            transform: translateY(-5px);
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .video-info {
+            padding: 1rem;
+        }
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .video-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .subscribe-section {
+            text-align: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        .subscribe-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #ff0000;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+        .subscribe-btn:hover {
+            background: #cc0000;
+        }
+        .playlist-section {
+            margin-top: 3rem;
+        }
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .playlist-item {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .playlist-item img {
+            width: 100%;
+            height: auto;
+        }
+        .playlist-info {
+            padding: 1rem;
+        }
+        .playlist-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .playlist-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="images/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>유튜브 채널</h2>
+            <div class="youtube-section">
+                <h2>셀라앙상블 유튜브 채널</h2>
+                <div class="youtube-channel">
+                    <a href="https://www.youtube.com/@Selah-Ensemble" target="_blank" class="youtube-link">
+                        <img src="images/youtube-logo.png" alt="YouTube Logo" class="youtube-logo">
+                        <span>셀라앙상블 유튜브 채널 바로가기</span>
+                    </a>
+                </div>
+
+                <div class="video-grid">
+                    <div class="video-item">
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/CzoaCPdjOKA" 
+                                    frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">
+                                <a href="https://www.youtube.com/watch?v=CzoaCPdjOKA" target="_blank">
+                                    셀라앙상블 찬양 영상 1
+                                </a>
+                            </div>
+                            <div class="video-date">2024.05.04</div>
+                        </div>
+                    </div>
+                    <div class="video-item">
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/_2iQ7_eqtsM" 
+                                    frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">
+                                <a href="https://www.youtube.com/watch?v=_2iQ7_eqtsM" target="_blank">
+                                    셀라앙상블 찬양 영상 2
+                                </a>
+                            </div>
+                            <div class="video-date">2024.05.04</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="playlist-section">
+                    <h3>재생목록</h3>
+                    <div class="playlist-grid">
+                        <div class="playlist-item">
+                            <a href="https://www.youtube.com/playlist?list=PLy8F7QwKkQw1A1B2C3D4E5F6G7H8I9J0K" target="_blank">
+                                <img src="images/playlist1.jpg" alt="라이브 영상">
+                                <div class="playlist-info">
+                                    <div class="playlist-title">셀라앙상블 라이브 영상</div>
+                                    <div class="playlist-count">라이브 공연 모음</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 

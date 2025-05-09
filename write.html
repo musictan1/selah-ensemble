@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글쓰기 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .write-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .write-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .form-group input[type="file"] {
+            padding: 0.5rem;
+            border: 1px dashed #ddd;
+            background: #f8f9fa;
+        }
+        .submit-btn {
+            padding: 1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #45a049;
+        }
+        .cancel-btn {
+            padding: 1rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .cancel-btn:hover {
+            background: #5a6268;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2 id="page-title">글쓰기</h2>
+            <div class="write-container">
+                <form class="write-form" id="writeForm">
+                    <input type="hidden" id="postId" name="postId" value="">
+                    <div class="form-group">
+                        <label for="title">제목</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group" style="display: none;">
+                        <label for="author">작성자</label>
+                        <input type="text" id="author" name="author" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="content">내용</label>
+                        <textarea id="content" name="content" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="file">첨부파일</label>
+                        <input type="file" id="file" name="file">
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="submit-btn">글쓰기</button>
+                        <a href="board.html" class="cancel-btn">취소</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let isEditMode = false;
+        let editPostId = null;
+        
+        // URL에서 매개변수를 가져오는 함수
+        function getUrlParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 인증 상태 확인
+            try {
+                const response = await fetch('/api/check-auth');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated || data.is_authenticated) {
+                        // 로그인 상태: 작성자 필드에 사용자 이름 설정
+                        document.getElementById('author').value = data.user.name;
+                        
+                        // 수정 모드 여부 확인
+                        editPostId = getUrlParam('edit');
+                        
+                        if (editPostId) {
+                            isEditMode = true;
+                            document.getElementById('page-title').textContent = '글 수정';
+                            document.querySelector('.submit-btn').textContent = '수정하기';
+                            document.getElementById('postId').value = editPostId;
+                            
+                            // 기존 글 데이터 가져오기
+                            await loadPostData(editPostId);
+                        }
+                    } else {
+                        // 비로그인 상태: 게시판 페이지로 리다이렉트
+                        alert('로그인이 필요한 페이지입니다.');
+                        window.location.href = '/login.html';
+                    }
+                } else {
+                    alert('로그인이 필요한 페이지입니다.');
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('인증 확인 중 오류가 발생했습니다:', error);
+                alert('인증 확인 중 오류가 발생했습니다.');
+                window.location.href = '/login.html';
+            }
+        });
+        
+        // 기존 글 데이터 불러오기
+        async function loadPostData(postId) {
+            try {
+                const response = await fetch('/api/posts');
+                if (response.ok) {
+                    const posts = await response.json();
+                    const post = posts.find(p => p.id == postId);
+                    
+                    if (!post) {
+                        alert('게시글을 찾을 수 없습니다.');
+                        window.location.href = 'board.html';
+                        return;
+                    }
+                    
+                    // 권한 확인 (관리자이거나 본인 글만 수정 가능)
+                    const authResponse = await fetch('/api/check-auth');
+                    const authData = await authResponse.json();
+                    
+                    if (authData.user.id !== post.author_id && authData.user.role !== 'admin') {
+                        alert('본인이 작성한 글만 수정할 수 있습니다.');
+                        window.location.href = 'board.html';
+                        return;
+                    }
+                    
+                    // 폼에 데이터 채우기
+                    document.getElementById('title').value = post.title;
+                    document.getElementById('content').value = post.content;
+                    
+                    if (post.file) {
+                        const fileInfo = document.createElement('p');
+                        fileInfo.innerHTML = `현재 첨부파일: <a href="/uploads/posts/${post.file}" target="_blank">${post.file}</a>`;
+                        document.getElementById('file').parentNode.appendChild(fileInfo);
+                    }
+                } else {
+                    alert('게시글을 불러오는데 실패했습니다.');
+                    window.location.href = 'board.html';
+                }
+            } catch (error) {
+                console.error('게시글 데이터 로드 중 오류가 발생했습니다:', error);
+                alert('게시글 데이터 로드 중 오류가 발생했습니다.');
+                window.location.href = 'board.html';
+            }
+        }
+
+        document.getElementById('writeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('content', document.getElementById('content').value);
+            
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+            
+            try {
+                let url = '/api/posts';
+                let method = 'POST';
+                
+                // 수정 모드인 경우 PUT 메서드로 변경
+                if (isEditMode) {
+                    url = `/api/posts/${editPostId}`;
+                    method = 'PUT';
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert(isEditMode ? '게시글이 수정되었습니다.' : '게시글이 작성되었습니다.');
+                    window.location.href = 'board.html';
+                } else {
+                    const data = await response.json();
+                    if (data.error === '로그인이 필요합니다.') {
+                        alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+                        window.location.href = '/login.html';
+                    } else {
+                        alert(data.error || (isEditMode ? '게시글 수정에 실패했습니다.' : '게시글 작성에 실패했습니다.'));
+                    }
+                }
+            } catch (error) {
+                console.error(isEditMode ? '게시글 수정 중 오류가 발생했습니다:' : '게시글 작성 중 오류가 발생했습니다:', error);
+                alert(isEditMode ? '게시글 수정 중 오류가 발생했습니다.' : '게시글 작성 중 오류가 발생했습니다.');
+            }
+        });
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 

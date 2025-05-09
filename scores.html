@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>악보파일 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .file-list {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .file-name {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .preview-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #28a745;
+        }
+        .preview-btn:hover {
+            background: #218838;
+        }
+        .download-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #007bff;
+        }
+        .download-btn:hover {
+            background: #0056b3;
+        }
+        .pdf-preview {
+            display: none;
+            margin-top: 10px;
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+        }
+        .no-files {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .upload-form {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .upload-form input[type="file"] {
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        .upload-form button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-form button:hover {
+            background: #0056b3;
+        }
+        .edit-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #ffc107;
+        }
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+        .delete-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #dc3545;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .permission-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>악보파일</h2>
+            <div class="upload-form">
+                <form id="scores-upload-form">
+                    <input type="file" name="file" accept=".pdf" required>
+                    <button type="submit">업로드</button>
+                </form>
+            </div>
+            <div class="file-list">
+                <div class="file-item">
+                    <span class="file-name">바람꽃.pdf</span>
+                    <div class="file-actions">
+                        <button onclick="togglePreview(this)" class="preview-btn">미리보기</button>
+                        <button onclick="editFile('scores', '바람꽃.pdf')" class="edit-btn">수정</button>
+                        <button onclick="deleteFile('scores', '바람꽃.pdf')" class="delete-btn">삭제</button>
+                        <a href="uploads/scores/바람꽃.pdf" download class="download-btn">다운로드</a>
+                    </div>
+                    <iframe class="pdf-preview" src="uploads/scores/바람꽃.pdf"></iframe>
+                </div>
+                <div class="file-item">
+                    <span class="file-name">주님의증인(완성).pdf</span>
+                    <div class="file-actions">
+                        <button onclick="togglePreview(this)" class="preview-btn">미리보기</button>
+                        <button onclick="editFile('scores', '주님의증인(완성).pdf')" class="edit-btn">수정</button>
+                        <button onclick="deleteFile('scores', '주님의증인(완성).pdf')" class="delete-btn">삭제</button>
+                        <a href="uploads/scores/주님의증인(완성).pdf" download class="download-btn">다운로드</a>
+                    </div>
+                    <iframe class="pdf-preview" src="uploads/scores/주님의증인(완성).pdf"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Global variables
+        let currentUser = null;
+        let isAdmin = false;
+
+        // 페이지 로드 시 사용자 정보 확인
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            loadFiles();
+        });
+
+        // 사용자 인증 확인 함수
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/check-auth');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated || data.is_authenticated) {
+                        currentUser = data.user;
+                        isAdmin = currentUser.role === 'admin';
+                        console.log("로그인 상태: 관리자 권한 =", isAdmin);
+                        
+                        // 관리자가 아닌 경우 수정/삭제 버튼 숨기기
+                        if (!isAdmin) {
+                            hideAdminButtons();
+                        }
+                        
+                        // 관리자가 아닌 경우 업로드 폼 숨기기
+                        const uploadForm = document.querySelector('.upload-form');
+                        if (uploadForm && !isAdmin) {
+                            uploadForm.style.display = 'none';
+                        }
+                        
+                        // 일반회원과 신입회원은 다운로드 버튼 숨기기 및 안내 메시지 표시
+                        if (currentUser.role === 'regular' || currentUser.role === 'new') {
+                            hideDownloadButtons();
+                            showPermissionMessage();
+                        }
+                    } else {
+                        currentUser = null;
+                        isAdmin = false;
+                        console.log("로그인되지 않은 상태");
+                        hideAdminButtons();
+                        
+                        // 업로드 폼 숨기기
+                        const uploadForm = document.querySelector('.upload-form');
+                        if (uploadForm) {
+                            uploadForm.style.display = 'none';
+                        }
+                    }
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                    console.log("인증 확인 실패");
+                    hideAdminButtons();
+                    
+                    // 업로드 폼 숨기기
+                    const uploadForm = document.querySelector('.upload-form');
+                    if (uploadForm) {
+                        uploadForm.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('인증 확인 중 오류 발생:', error);
+                currentUser = null;
+                isAdmin = false;
+                hideAdminButtons();
+                
+                // 업로드 폼 숨기기
+                const uploadForm = document.querySelector('.upload-form');
+                if (uploadForm) {
+                    uploadForm.style.display = 'none';
+                }
+            }
+        }
+
+        // 관리자 버튼 숨기기 함수
+        function hideAdminButtons() {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            
+            editButtons.forEach(button => {
+                button.style.display = 'none';
+            });
+            
+            deleteButtons.forEach(button => {
+                button.style.display = 'none';
+            });
+        }
+        
+        // 다운로드 버튼 숨기기 함수
+        function hideDownloadButtons() {
+            const downloadButtons = document.querySelectorAll('.download-btn');
+            
+            downloadButtons.forEach(button => {
+                button.style.display = 'none';
+            });
+        }
+
+        function togglePreview(button) {
+            const pdfPreview = button.parentElement.nextElementSibling;
+            const allPdfPreviews = document.querySelectorAll('.pdf-preview');
+            
+            // 다른 모든 미리보기 닫기
+            allPdfPreviews.forEach(pdf => {
+                if (pdf !== pdfPreview) {
+                    pdf.style.display = 'none';
+                }
+            });
+            
+            // 현재 미리보기 토글
+            if (pdfPreview.style.display === 'none' || !pdfPreview.style.display) {
+                pdfPreview.style.display = 'block';
+            } else {
+                pdfPreview.style.display = 'none';
+            }
+        }
+
+        // 파일 목록 불러오기
+        function loadFiles() {
+            fetch('/check_files?t=' + new Date().getTime())
+                .then(response => response.json())
+                .then(data => {
+                    updateScoresList(data.scores);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // 악보 목록 업데이트
+        function updateScoresList(scores) {
+            const fileList = document.querySelector('.file-list');
+            fileList.innerHTML = '';
+            
+            if (scores && scores.length > 0) {
+                scores.forEach(file => {
+                    const fileItem = createFileItem(file);
+                    fileList.appendChild(fileItem);
+                });
+            } else {
+                fileList.innerHTML = '<p class="no-files">등록된 악보 파일이 없습니다.</p>';
+            }
+        }
+
+        // 파일 아이템 생성
+        function createFileItem(filename) {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            
+            const fileName = document.createElement('span');
+            fileName.className = 'file-name';
+            fileName.textContent = filename;
+            
+            const fileActions = document.createElement('div');
+            fileActions.className = 'file-actions';
+            
+            // 미리보기 버튼 (모든 사용자에게 표시)
+            const previewButton = document.createElement('button');
+            previewButton.className = 'preview-btn';
+            previewButton.textContent = '미리보기';
+            previewButton.onclick = function() {
+                togglePreview(this);
+            };
+            
+            // 수정 버튼 (관리자만 표시)
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-btn';
+            editButton.textContent = '수정';
+            editButton.onclick = function() {
+                editFile('scores', filename);
+            };
+            if (!isAdmin) {
+                editButton.style.display = 'none';
+            }
+            
+            // 삭제 버튼 (관리자만 표시)
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-btn';
+            deleteButton.textContent = '삭제';
+            deleteButton.onclick = function() {
+                deleteFile('scores', filename);
+            };
+            if (!isAdmin) {
+                deleteButton.style.display = 'none';
+            }
+            
+            // 다운로드 버튼 (관리자와 특별회원에게만 표시)
+            const downloadButton = document.createElement('a');
+            downloadButton.className = 'download-btn';
+            downloadButton.textContent = '다운로드';
+            
+            // 파일 경로 확인 함수
+            function checkFilePath(callback) {
+                // 먼저 기본 경로 확인
+                fetch(`uploads/scores/${encodeURIComponent(filename)}`, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            callback(`uploads/scores/${encodeURIComponent(filename)}`);
+                        } else {
+                            // 기본 경로에 없으면 default 하위 디렉토리 확인
+                            callback(`uploads/scores/default/${encodeURIComponent(filename)}`);
+                        }
+                    })
+                    .catch(() => {
+                        // 오류 발생 시 default 하위 디렉토리 사용
+                        callback(`uploads/scores/default/${encodeURIComponent(filename)}`);
+                    });
+            }
+            
+            // 파일 경로 확인 후 다운로드 링크 설정
+            checkFilePath(filePath => {
+                downloadButton.href = filePath;
+                downloadButton.download = filename;
+            });
+            
+            // 일반회원과 신입회원은 다운로드 버튼 숨기기
+            if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new')) {
+                downloadButton.style.display = 'none';
+            }
+            
+            // 버튼들을 fileActions에 추가
+            fileActions.appendChild(previewButton);
+            fileActions.appendChild(editButton);
+            fileActions.appendChild(deleteButton);
+            fileActions.appendChild(downloadButton);
+            
+            // iframe 생성 (PDF 뷰어)
+            const iframe = document.createElement('iframe');
+            iframe.className = 'pdf-preview';
+            
+            // iframe 소스도 파일 경로 확인 후 설정
+            checkFilePath(filePath => {
+                iframe.src = filePath;
+            });
+            
+            // 모두 item에 추가
+            item.appendChild(fileName);
+            item.appendChild(fileActions);
+            item.appendChild(iframe);
+            
+            return item;
+        }
+
+        // 파일 삭제 함수
+        function deleteFile(category, filename) {
+            if (confirm(`"${filename}" 파일을 삭제하시겠습니까?`)) {
+                // 파일이 기본 디렉토리에 있는지 하위 디렉토리에 있는지 확인
+                fetch(`uploads/${category}/${encodeURIComponent(filename)}`, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            // 기본 디렉토리에 있는 경우
+                            performDelete(category, filename);
+                        } else {
+                            // 하위 디렉토리에 있는 경우
+                            performDelete(`${category}/default`, filename);
+                        }
+                    })
+                    .catch(() => {
+                        // 오류 발생 시 하위 디렉토리 시도
+                        performDelete(`${category}/default`, filename);
+                    });
+            }
+        }
+        
+        // 실제 삭제 수행 함수
+        function performDelete(category, filename) {
+            fetch(`/delete/${category}/${encodeURIComponent(filename)}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('파일이 삭제되었습니다.');
+                    loadFiles();
+                } else {
+                    alert('파일 삭제에 실패했습니다: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('파일 삭제 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 파일 수정 함수
+        function editFile(category, filename) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // 파일이 기본 디렉토리에 있는지 하위 디렉토리에 있는지 확인
+                fetch(`uploads/${category}/${encodeURIComponent(filename)}`, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            // 기본 디렉토리에 있는 경우
+                            performEdit(category, filename, file);
+                        } else {
+                            // 하위 디렉토리에 있는 경우
+                            performEdit(`${category}/default`, filename, file);
+                        }
+                    })
+                    .catch(() => {
+                        // 오류 발생 시 하위 디렉토리 시도
+                        performEdit(`${category}/default`, filename, file);
+                    });
+            };
+            
+            input.click();
+        }
+        
+        // 실제 수정 수행 함수
+        function performEdit(category, filename, file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch(`/edit/${category}/${encodeURIComponent(filename)}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('파일이 수정되었습니다.');
+                    loadFiles();
+                } else {
+                    alert('파일 수정에 실패했습니다: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('파일 수정 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 업로드 폼 이벤트 처리
+        document.getElementById('scores-upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            formData.append('category', 'scores/default');
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('파일이 업로드되었습니다.');
+                    this.reset();
+                    loadFiles();
+                } else {
+                    alert('파일 업로드에 실패했습니다: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('파일 업로드 중 오류가 발생했습니다.');
+            });
+        });
+
+        // 권한 안내 메시지 표시 함수
+        function showPermissionMessage() {
+            // 기존 메시지가 있으면 제거
+            const existingMessage = document.querySelector('.permission-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // 메시지 생성
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'permission-message';
+            messageDiv.style.backgroundColor = '#f8d7da';
+            messageDiv.style.color = '#721c24';
+            messageDiv.style.padding = '10px 15px';
+            messageDiv.style.marginBottom = '20px';
+            messageDiv.style.borderRadius = '5px';
+            messageDiv.style.border = '1px solid #f5c6cb';
+            messageDiv.textContent = '일반회원은 미리보기만 가능하며, 다운로드는 불가능합니다. 다운로드가 필요하시면 관리자에게 문의해주세요.';
+            
+            // 메시지 추가
+            const section = document.querySelector('.section');
+            section.insertBefore(messageDiv, section.querySelector('.file-list'));
+        }
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 추가 스타일 */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('IMAGES/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .section {
+            padding: 80px 20px;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-content img {
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-content p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .resource-item {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .resource-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .resource-item i {
+            font-size: 3em;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .contact-info {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            font-size: 1.5em;
+            margin: 0 10px;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #007bff;
+        }
+
+        @media (max-width: 768px) {
+            .about-content {
+                flex-direction: column;
+            }
+
+            .about-content img {
+                width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero p {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+                <li><a href="admin.html">회원관리</a></li>
+                <li id="auth-status">
+                    <a href="login.html" id="login-link">로그인</a>
+                    <a href="#" id="logout-link" style="display: none;" onclick="logout()">로그아웃</a>
+                </li>
+                <li id="user-info" style="display: none;"></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>셀라앙상블 찬양단</h1>
+                <p>하나님을 찬양하는 아름다운 음악의 공동체</p>
+                <a href="#about" class="btn">더 알아보기</a>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <h2>셀라앙상블 소개</h2>
+            <div class="about-content">
+                <img src="IMAGES/ensemble.jpg" alt="셀라앙상블 단체사진">
+                <div>
+                    <p>셀라앙상블은 2024년에 설립된 기독교 찬양단체입니다. 
+                       다양한 악기와 보컬이 어우러져 하나님께 영광을 돌리는 
+                       아름다운 음악을 만들어가고 있습니다.</p>
+                    <p>우리는 매주 정기적인 연습과 공연을 통해 
+                       하나님의 은혜를 나누고, 음악을 통해 
+                       복음을 전파하는 것을 사명으로 삼고 있습니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="performances" class="section">
+            <div class="container">
+                <h2>최근 공연 영상</h2>
+                <div class="video-container">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Y5n-y5_6j14" 
+                            title="YouTube video player" frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>셀라 앙상블 특별 공연</h3>
+                    <p>2024년 봄 특별 공연 영상을 감상하세요.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="section">
+            <h2>자료실</h2>
+            <div class="resource-grid">
+                <div class="resource-item">
+                    <i class="fas fa-music"></i>
+                    <h3>음악파일</h3>
+                    <p>셀라앙상블의 음악 파일을 다운로드하세요.</p>
+                    <a href="music.html" class="btn">바로가기</a>
+                </div>
+                <div class="resource-item">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>악보파일</h3>
+                    <p>셀라앙상블의 악보를 다운로드하세요.</p>
+                    <a href="scores.html" class="btn">바로가기</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <h2>연락처</h2>
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> 이메일: selahensemb@gmail.com</p>
+                <p><i class="fas fa-phone"></i> 전화: 010-6688-7177</p>
+                <div class="social-links">
+                    <a href="https://www.youtube.com/@Selah-Ensemble" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/menu-permissions.js"></script>
+    <script src="js/login-button.js"></script>
+    <script>
+        // 로그인 상태 확인
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/check-auth');
+                const data = await response.json();
+                
+                const loginLink = document.getElementById('login-link');
+                const logoutLink = document.getElementById('logout-link');
+                const userInfo = document.getElementById('user-info');
+                
+                if (data.authenticated || data.is_authenticated) {
+                    if (loginLink) loginLink.style.display = 'none';
+                    if (logoutLink) logoutLink.style.display = 'inline-block';
+                    
+                    // 사용자 정보 표시
+                    if (userInfo && data.user) {
+                        userInfo.style.display = 'block';
+                        userInfo.textContent = `${data.user.username} (${getRoleName(data.user.role)})`;
+                    }
+                } else {
+                    if (loginLink) loginLink.style.display = 'inline-block';
+                    if (logoutLink) logoutLink.style.display = 'none';
+                    if (userInfo) userInfo.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('로그인 상태 확인 중 오류 발생:', error);
+            }
+        }
+        
+        // 역할 이름 변환
+        function getRoleName(role) {
+            const roles = {
+                'admin': '관리자',
+                'special': '특별회원',
+                'regular': '일반회원',
+                'new': '신입회원'
+            };
+            return roles[role] || role;
+        }
+        
+        // 로그아웃 함수
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    // 로컬 스토리지 정리
+                    localStorage.removeItem('user');
+                    
+                    // 페이지 새로고침
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('로그아웃 중 오류 발생:', error);
+            }
+        }
+        
+        // 페이지 로드 시 로그인 상태 확인
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
+</body>
+</html> 
+</html> 

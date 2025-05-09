@@ -1,0 +1,47 @@
+{
+  "menu_permissions": {
+    "admin": [
+      "about",
+      "join",
+      "performances",
+      "music",
+      "scores",
+      "board",
+      "schedule",
+      "inquiry",
+      "sponsor",
+      "youtube",
+      "instagram",
+      "admin"
+    ],
+    "special": [
+      "about",
+      "performances",
+      "music",
+      "scores",
+      "board",
+      "schedule",
+      "inquiry",
+      "sponsor",
+      "youtube",
+      "instagram"
+    ],
+    "regular": [
+      "about",
+      "performances",
+      "music",
+      "scores",
+      "board",
+      "inquiry",
+      "youtube",
+      "instagram"
+    ],
+    "new": [
+      "about",
+      "performances",
+      "board",
+      "inquiry",
+      "instagram"
+    ]
+  }
+}

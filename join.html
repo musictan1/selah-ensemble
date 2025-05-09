@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .register-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .register-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .register-btn:hover {
+            background: #45a049;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .login-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            display: none;
+        }
+        .success-message {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+            display: none;
+        }
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        .id-check-btn {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .id-check-btn:hover {
+            background: #1976D2;
+        }
+        .id-check-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="IMAGES/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>회원가입</h2>
+            <div class="register-container">
+                <div id="successMessage" class="success-message" style="display: none;"></div>
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                <form id="joinForm">
+                    <div class="form-group">
+                        <label for="username">아이디</label>
+                        <input type="text" id="username" name="username" required>
+                        <button type="button" class="id-check-btn" onclick="checkUsername()">아이디 중복 확인</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" name="password" required>
+                        <div class="password-requirements">
+                            * 비밀번호는 8자 이상이어야 합니다.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">비밀번호 확인</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">이름</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">전화번호</label>
+                        <input type="tel" id="phone" name="phone" pattern="010-\d{4}-\d{4}" placeholder="010-0000-0000" required>
+                    </div>
+                    <button type="submit" class="register-btn">회원가입</button>
+                </form>
+                <div class="login-link">
+                    이미 회원이신가요? <a href="login.html">로그인</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let isUsernameChecked = false;
+
+        async function checkUsername() {
+            const username = document.getElementById('username').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (!username) {
+                errorMessage.textContent = '아이디를 입력해주세요.';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/check-username', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.available) {
+                    errorMessage.style.display = 'none';
+                    successMessage.textContent = '사용 가능한 아이디입니다.';
+                    successMessage.style.display = 'block';
+                    isUsernameChecked = true;
+                } else {
+                    successMessage.style.display = 'none';
+                    errorMessage.textContent = data.error || '이미 사용 중인 아이디입니다.';
+                    errorMessage.style.display = 'block';
+                    isUsernameChecked = false;
+                }
+            } catch (error) {
+                successMessage.style.display = 'none';
+                errorMessage.textContent = '아이디 확인 중 오류가 발생했습니다.';
+                errorMessage.style.display = 'block';
+                isUsernameChecked = false;
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('username').addEventListener('input', function() {
+            isUsernameChecked = false;
+        });
+
+        document.getElementById('joinForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!isUsernameChecked) {
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = '아이디 중복 확인을 해주세요.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (password !== confirmPassword) {
+                errorMessage.textContent = '비밀번호가 일치하지 않습니다.';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                return;
+            }
+            
+            if (password.length < 8) {
+                errorMessage.textContent = '비밀번호는 8자 이상이어야 합니다.';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        name: name,
+                        email: email,
+                        phone: phone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    errorMessage.style.display = 'none';
+                    successMessage.textContent = '회원가입이 완료되었습니다. 3초 후 로그인 페이지로 이동합니다.';
+                    successMessage.style.display = 'block';
+                    document.getElementById('joinForm').reset();
+                    isUsernameChecked = false;
+                    
+                    // 3초 후 로그인 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 3000);
+                } else {
+                    successMessage.style.display = 'none';
+                    errorMessage.textContent = data.error;
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                successMessage.style.display = 'none';
+                errorMessage.textContent = '회원가입 중 오류가 발생했습니다.';
+                errorMessage.style.display = 'block';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 

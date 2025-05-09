@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>후원계좌 - 셀라앙상블 찬양단</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sponsor-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .account-info {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .account-info h3 {
+            margin-bottom: 1rem;
+            color: #4a90e2;
+        }
+        .account-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .account-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .account-item h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .account-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+        .copy-btn {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .copy-btn:hover {
+            background: #357abd;
+        }
+        .sponsor-info {
+            margin-top: 2rem;
+        }
+        .sponsor-info p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .sponsor-list {
+            list-style: none;
+            padding: 0;
+        }
+        .sponsor-list li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .sponsor-list li:before {
+            content: "•";
+            color: #4a90e2;
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="images/logo.png" alt="셀라앙상블 로고"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#about">소개</a></li>
+                <li><a href="join.html">회원가입</a></li>
+                <li><a href="performances.html">찬양사역영상</a></li>
+                <li><a href="music.html">음악파일</a></li>
+                <li><a href="scores.html">악보파일</a></li>
+                <li><a href="board.html">게시판</a></li>
+                <li><a href="schedule.html">일정관리</a></li>
+                <li><a href="inquiry.html">찬양사역문의</a></li>
+                <li><a href="sponsor.html">후원계좌</a></li>
+                <li><a href="youtube.html">유튜브</a></li>
+                <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>후원계좌</h2>
+            <div class="sponsor-section">
+                <div class="account-info">
+                    <h3>후원 계좌 정보</h3>
+                    <div class="account-details">
+                        <div class="account-item">
+                            <h4>국민은행</h4>
+                            <div class="account-number">123-456-7890</div>
+                            <p>예금주: 셀라앙상블</p>
+                            <button class="copy-btn" onclick="copyAccount('123-456-7890')">계좌번호 복사</button>
+                        </div>
+                        <div class="account-item">
+                            <h4>신한은행</h4>
+                            <div class="account-number">987-654-3210</div>
+                            <p>예금주: 셀라앙상블</p>
+                            <button class="copy-btn" onclick="copyAccount('987-654-3210')">계좌번호 복사</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-info">
+                    <h3>후원 안내</h3>
+                    <p>셀라앙상블의 음악 사역을 위해 후원해 주시는 모든 분들께 감사드립니다.</p>
+                    <p>후원금은 다음과 같은 목적으로 사용됩니다:</p>
+                    <ul class="sponsor-list">
+                        <li>악기 유지보수 및 구입</li>
+                        <li>공연장 대여 및 운영비</li>
+                        <li>음악 교육 및 워크샵</li>
+                        <li>음반 제작 및 홍보</li>
+                        <li>선교 사역 지원</li>
+                    </ul>
+                    <p>후원해 주신 분들께는 정기적으로 후원금 사용 내역을 공개하고 있습니다.</p>
+                    <p>후원 관련 문의사항은 연락처로 문의해 주시기 바랍니다.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 셀라앙상블 찬양단. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        function copyAccount(accountNumber) {
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                alert('계좌번호가 복사되었습니다.');
+            }).catch(err => {
+                console.error('계좌번호 복사 실패:', err);
+            });
+        }
+    </script>
+    <script src="js/menu-permissions.js"></script>
+</body>
+</html> 
