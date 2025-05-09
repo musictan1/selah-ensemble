@@ -3,3 +3,4 @@ gunicorn==23.0.0
 werkzeug>=3.0.0
 greenlet
 cachelib==0.13.0
+flask_session
