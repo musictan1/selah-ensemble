@@ -1,5 +1,5 @@
 flask==3.0.3
 gunicorn==23.0.0
 werkzeug>=3.0.0
-greenlet==3.0.3  # 이전 로그에서 greenlet 문제 해결
+greenlet
 cachelib==0.13.0
