@@ -319,3 +319,15 @@ footer {
 }
 
 /* 추가적인 스타일은 여기에 작성합니다 */ 
+
+@media (min-width: 769px) {
+    .nav-menu {
+        display: flex !important;
+        flex-direction: row;
+        position: static;
+        width: auto;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+    }
+}
