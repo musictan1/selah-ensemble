@@ -289,14 +289,19 @@
             allPdfPreviews.forEach(pdf => {
                 if (pdf !== pdfPreview) {
                     pdf.style.display = 'none';
+                    pdf.src = ''; // src 초기화
                 }
             });
             
             // 현재 미리보기 토글
             if (pdfPreview.style.display === 'none' || !pdfPreview.style.display) {
                 pdfPreview.style.display = 'block';
+                // 미리보기 버튼 클릭 시에만 src 설정
+                const filename = button.parentElement.previousElementSibling.textContent;
+                pdfPreview.src = `uploads/scores/${filename}`;
             } else {
                 pdfPreview.style.display = 'none';
+                pdfPreview.src = ''; // src 초기화
             }
         }
 
@@ -369,59 +374,26 @@
                 deleteButton.style.display = 'none';
             }
             
-            // 다운로드 버튼 (관리자와 특별회원에게만 표시)
+            // 다운로드 버튼
             const downloadButton = document.createElement('a');
             downloadButton.className = 'download-btn';
             downloadButton.textContent = '다운로드';
+            downloadButton.href = `uploads/scores/${filename}`;
+            downloadButton.download = filename;
             
-            // 파일 경로 확인 함수
-            function checkFilePath(callback) {
-                // 먼저 기본 경로 확인
-                fetch(`uploads/scores/${encodeURIComponent(filename)}`, { method: 'HEAD' })
-                    .then(response => {
-                        if (response.ok) {
-                            callback(`uploads/scores/${encodeURIComponent(filename)}`);
-                        } else {
-                            // 기본 경로에 없으면 default 하위 디렉토리 확인
-                            callback(`uploads/scores/default/${encodeURIComponent(filename)}`);
-                        }
-                    })
-                    .catch(() => {
-                        // 오류 발생 시 default 하위 디렉토리 사용
-                        callback(`uploads/scores/default/${encodeURIComponent(filename)}`);
-                    });
-            }
+            // 미리보기 iframe (초기에는 src를 설정하지 않음)
+            const pdfPreview = document.createElement('iframe');
+            pdfPreview.className = 'pdf-preview';
+            pdfPreview.style.display = 'none';
             
-            // 파일 경로 확인 후 다운로드 링크 설정
-            checkFilePath(filePath => {
-                downloadButton.href = filePath;
-                downloadButton.download = filename;
-            });
-            
-            // 일반회원과 신입회원은 다운로드 버튼 숨기기
-            if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new')) {
-                downloadButton.style.display = 'none';
-            }
-            
-            // 버튼들을 fileActions에 추가
             fileActions.appendChild(previewButton);
             fileActions.appendChild(editButton);
             fileActions.appendChild(deleteButton);
             fileActions.appendChild(downloadButton);
             
-            // iframe 생성 (PDF 뷰어)
-            const iframe = document.createElement('iframe');
-            iframe.className = 'pdf-preview';
-            
-            // iframe 소스도 파일 경로 확인 후 설정
-            checkFilePath(filePath => {
-                iframe.src = filePath;
-            });
-            
-            // 모두 item에 추가
             item.appendChild(fileName);
             item.appendChild(fileActions);
-            item.appendChild(iframe);
+            item.appendChild(pdfPreview);
             
             return item;
         }

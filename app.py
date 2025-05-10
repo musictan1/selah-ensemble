@@ -47,7 +47,9 @@ app.config.from_object(Config)
 # 추가 세션 설정
 app.config.update(
     SESSION_COOKIE_NAME="sela_session",
-    JSONIFY_PRETTYPRINT_REGULAR=False
+    JSONIFY_PRETTYPRINT_REGULAR=False,
+    PERMANENT_SESSION_LIFETIME=timedelta(days=30),  # 세션 만료 시간을 30일로 설정
+    SESSION_TYPE='filesystem'  # 세션을 파일 시스템에 저장
 )
 
 # 세션 초기화
@@ -375,7 +377,10 @@ def generate_verification_code():
 def load_users():
     try:
         if not os.path.exists(USERS_FILE):
+            # 파일이 없으면 빈 리스트로 초기화
+            save_users([])
             return []
+            
         with open(USERS_FILE, 'r', encoding='utf-8') as f:
             users = json.load(f)
             return users if isinstance(users, list) else []
@@ -385,10 +390,21 @@ def load_users():
 
 def save_users(users):
     try:
-        with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        # 디렉토리가 없으면 생성
+        os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
+        
+        # 임시 파일에 먼저 저장
+        temp_file = USERS_FILE + '.tmp'
+        with open(temp_file, 'w', encoding='utf-8') as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
+            
+        # 임시 파일을 실제 파일로 이동 (원자적 연산)
+        os.replace(temp_file, USERS_FILE)
     except Exception as e:
         print(f"사용자 데이터 저장 중 오류 발생: {e}")
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+        raise
 
 def load_posts():
     try:
@@ -473,73 +489,38 @@ def serve_static(path):
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
-        print("로그인 요청 받음")  # 디버깅용 로그
-        
-        # 요청 데이터 확인
-        if request.is_json:
-            data = request.get_json()
-            print(f"JSON 데이터: {data}")  # 디버깅용 로그
-        else:
-            data = request.form
-            print(f"Form 데이터: {data}")  # 디버깅용 로그
-        
+        data = request.get_json()
         username = data.get('username')
         password = data.get('password')
         
-        print(f"로그인 시도 - 아이디: {username}")  # 디버깅용 로그
-        
         if not username or not password:
-            print("아이디 또는 비밀번호 누락")  # 디버깅용 로그
             return jsonify({'error': '사용자 이름과 비밀번호를 입력해주세요.'}), 400
-        
-        # 사용자 데이터 로드
+            
         users = load_users()
-        print(f"로드된 사용자 수: {len(users)}")  # 디버깅용 로그
-        
-        # 사용자 찾기
-        user = None
-        for u in users:
-            print(f"사용자 확인: {u['username']}")  # 디버깅용 로그
-            if u['username'] == username and u['password'] == password:
-                user = u
-                break
+        user = next((u for u in users if u['username'] == username and u['password'] == password), None)
         
         if user:
-            print(f"로그인 성공: {username}")  # 디버깅용 로그
-            
-            # 세션 초기화 및 영구 세션 설정
-            session.clear()
+            # 세션을 영구적으로 설정
             session.permanent = True
-            
-            # 세션 데이터 설정
             session['user_id'] = user['id']
             session['username'] = user['username']
-            session['name'] = user['name']
             session['role'] = user['role']
-            session['logged_in'] = True
-            session['login_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             
-            # 응답 생성
-            response = jsonify({
+            # 사용자 정보에서 비밀번호 제외
+            safe_user = user.copy()
+            if 'password' in safe_user:
+                del safe_user['password']
+                
+            return jsonify({
                 'message': '로그인 성공',
-                'user': {
-                    'id': user['id'],
-                    'username': user['username'],
-                    'name': user['name'],
-                    'role': user['role']
-                },
-                'redirect': 'index.html'
+                'user': safe_user
             })
-            
-            print(f"응답 전송: {response.get_data(as_text=True)}")  # 디버깅용 로그
-            return response
         else:
-            print(f"로그인 실패: {username}")  # 디버깅용 로그
-            return jsonify({'error': '사용자 이름 또는 비밀번호가 올바르지 않습니다.'}), 401
+            return jsonify({'error': '잘못된 사용자 이름 또는 비밀번호입니다.'}), 401
             
     except Exception as e:
-        print(f"로그인 중 오류 발생: {str(e)}")  # 디버깅용 로그
-        return jsonify({'error': f'로그인 처리 중 오류가 발생했습니다: {str(e)}'}), 500
+        print(f"로그인 처리 중 오류 발생: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
@@ -564,49 +545,37 @@ def logout():
         print(f"로그아웃 중 오류 발생: {str(e)}")
         return jsonify({'error': f'로그아웃 처리 중 오류가 발생했습니다: {str(e)}'}), 500
 
-@app.route('/api/check-auth', methods=['GET'])
+@app.route('/api/check-auth')
 def check_auth():
     try:
-        # 세션 유효성 검사
-        if 'user_id' not in session or not session.get('logged_in'):
-            print("인증 확인: 로그인되지 않음")
-            return jsonify({
-                'authenticated': False, 
-                'is_authenticated': False
-            }), 401
+        user_id = session.get('user_id')
+        if user_id:
+            users = load_users()
+            user = next((u for u in users if u['id'] == user_id), None)
             
-        # 사용자 데이터 확인
-        users = load_users()
-        user = next((u for u in users if u['id'] == session['user_id']), None)
-        
-        if not user:
-            print(f"인증 확인: 사용자를 찾을 수 없음 (ID: {session.get('user_id')})")
-            session.clear()
-            return jsonify({
-                'authenticated': False, 
-                'is_authenticated': False
-            }), 401
-        
-        # 세션 정보 갱신 (활동 시간)
-        session['last_activity'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
-        print(f"인증 확인: 유효한 사용자 {user['username']} (역할: {user['role']})")
+            if user:
+                # 사용자 정보에서 비밀번호 제외
+                safe_user = user.copy()
+                if 'password' in safe_user:
+                    del safe_user['password']
+                    
+                return jsonify({
+                    'authenticated': True,
+                    'is_authenticated': True,
+                    'user': safe_user
+                })
+                
         return jsonify({
-            'authenticated': True,
-            'is_authenticated': True,
-            'user': {
-                'id': user['id'],
-                'username': user['username'],
-                'name': user['name'],
-                'role': user['role']
-            },
-            'menu_permissions': MENU_PERMISSIONS.get(user['role'], []),
-            'permissions': USER_PERMISSIONS.get(user['role'], [])
+            'authenticated': False,
+            'is_authenticated': False
         })
     except Exception as e:
         print(f"인증 확인 중 오류 발생: {e}")
-        session.clear()
-        return jsonify({'error': str(e), 'authenticated': False, 'is_authenticated': False}), 500
+        return jsonify({
+            'authenticated': False,
+            'is_authenticated': False,
+            'error': str(e)
+        }), 500
 
 # 서버 시작 시 초기화
 @app.before_request
