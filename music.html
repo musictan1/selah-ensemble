@@ -883,7 +883,7 @@
             downloadButton.textContent = '다운로드';
             
             // 인코딩된 파일 경로
-            const filePath = `uploads/${category}/${encodeURIComponent(file)}`;
+            const filePath = `static/uploads/${category}/${encodeURIComponent(file)}`;
             console.log("생성된 파일 경로:", filePath);
             
             downloadButton.href = filePath;
@@ -918,6 +918,13 @@
             console.log(`오디오 소스 경로: ${source.src}, 타입: ${source.type}`);
             
             audio.appendChild(source);
+            
+            // 오류 처리 추가
+            audio.addEventListener('error', function(e) {
+                console.error('오디오 로드 오류:', audio.error);
+                console.error('오류 발생 상세정보:', e);
+                alert('오디오 파일을 로드할 수 없습니다. 경로: ' + source.src);
+            });
             
             // 모두 item에 추가
             item.appendChild(fileInfo);
