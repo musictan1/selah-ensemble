@@ -1591,22 +1591,22 @@ def serve_upload(filename):
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
                 
             # 사용자 정보 확인
-            users = load_users()
-            user = next((u for u in users if u['id'] == session['user_id']), None)
-            
+            users = load_users(); user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
-                
-            # 일반회원과 신입회원은 악보 다운로드 불가
-            if user['role'] in ['regular', 'new']:
-                return jsonify({'error': '일반회원은 악보 파일을 다운로드할 수 없습니다.'}), 403
+            # 특별회원, 관리자만 다운로드 가능
+            if user['role'] not in ['admin', 'special']:
+                return jsonify({'error': '특별회원 및 관리자만 악보 파일을 다운로드할 수 있습니다.'}), 403
+        # 음악 파일에 대한 권한 확인 (music/ai, music/mr, music/live)
+        if len(path_parts) > 1 and path_parts[0] == 'music' and path_parts[1] in ['ai', 'mr', 'live']:
+            if 'user_id' not in session:
+                return jsonify({'error': '로그인이 필요합니다.'}), 401
+            users = load_users(); user = next((u for u in users if u['id'] == session['user_id']), None)
+            if not user:
+                return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
+            if user['role'] not in ['admin', 'special']:
+                return jsonify({'error': '특별회원 및 관리자만 음악 파일을 다운로드할 수 있습니다.'}), 403
         
-        # ai, mr, live 카테고리 파일 경로 수정
-        # 요청이 ai/, mr/, live/로 시작하면 music/ 경로를 추가
-        if len(path_parts) > 0 and path_parts[0] in ['ai', 'mr', 'live']:
-            # music/ 경로를 추가
-            path_parts.insert(0, 'music')
-            
         if len(path_parts) > 1:
             # 마지막 부분은 파일 이름, 나머지는 디렉토리 경로
             directory = os.path.join(UPLOAD_FOLDER, *path_parts[:-1])
@@ -1639,8 +1639,8 @@ def serve_scores(path):
             return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
             
         # 일반회원과 신입회원은 악보 다운로드 불가
-        if user['role'] in ['regular', 'new']:
-            return jsonify({'error': '일반회원은 악보 파일을 다운로드할 수 없습니다.'}), 403
+        if user['role'] == 'new':
+            return jsonify({'error': '신입회원은 악보 파일을 다운로드할 수 없습니다.'}), 403
             
         # 관리자와 특별회원만 다운로드 가능
         return send_from_directory(os.path.join(UPLOAD_FOLDER, 'scores'), path)

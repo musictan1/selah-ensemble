@@ -19,10 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // 권한 설정 적용
-            menuPermissions = data.menu_permissions || [];
-            
-            // 권한에 따라 메뉴 표시
-            applyMenuPermissions();
+            const currentMenuPermissions = (data.menu_permissions && data.user && data.menu_permissions[data.user.role]) || [];
+            applyMenuPermissions(currentMenuPermissions);
         })
         .catch(error => {
             console.error('인증 확인 오류:', error);
@@ -31,15 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 오류 발생 시 기본 권한 적용
     setTimeout(() => {
-        if (menuPermissions.length === 0) {
-            applyDefaultMenuPermissions();
-            addLoginMenuItem();
-        }
+        applyDefaultMenuPermissions();
+        addLoginMenuItem();
     }, 3000);
 });
 
 // 메뉴 권한 적용 함수
-function applyMenuPermissions() {
+function applyMenuPermissions(menuPermissions) {
     // 네비게이션 메뉴 선택
     const navMenu = document.querySelector('.nav-menu');
     if (!navMenu) return;
@@ -116,38 +112,31 @@ function applyDefaultMenuPermissions() {
 // URL에서 메뉴 ID 추출 함수
 function getMenuIdFromHref(href) {
     if (!href) return null;
-    
     // 절대 경로에서 상대 경로로 변환
-    const path = href.replace(/^https?:\/\/[^\/]+/, '');
-    
-    if (path.startsWith('/index.html') || path === '/' || path === '/index.html#about' || path === 'index.html#about') {
-        return 'about';
-    } else if (path.includes('join.html')) {
-        return 'join';
-    } else if (path.includes('performances.html')) {
-        return 'performances';
-    } else if (path.includes('music.html')) {
-        return 'music';
-    } else if (path.includes('scores.html')) {
-        return 'scores';
-    } else if (path.includes('board.html')) {
-        return 'board';
-    } else if (path.includes('schedule.html')) {
-        return 'schedule';
-    } else if (path.includes('inquiry.html')) {
-        return 'inquiry';
-    } else if (path.includes('sponsor.html')) {
-        return 'sponsor';
-    } else if (path.includes('youtube.html')) {
-        return 'youtube';
-    } else if (path.includes('instagram.com')) {
-        return 'instagram';
-    } else if (path.includes('admin.html')) {
-        return 'admin';
-    } else if (path.includes('login.html')) {
-        return 'login';
-    }
-    
+    let path = href.replace(/^https?:\/\/[^\/]+/, '');
+    // 해시 제거
+    path = path.split('#')[0];
+    // 마지막 / 제거
+    if (path.endsWith('/')) path = path.slice(0, -1);
+    // 소문자 변환
+    path = path.toLowerCase();
+
+    if (path === '/' || path === '' || path === 'index.html') return 'about';
+    if (path === 'index.html' || path === '/index.html') return 'about';
+    if (path === 'join.html' || path === '/join.html') return 'join';
+    if (path === 'performances.html' || path === '/performances.html') return 'performances';
+    if (path === 'music.html' || path === '/music.html') return 'music';
+    if (path === 'scores.html' || path === '/scores.html') return 'scores';
+    if (path === 'board.html' || path === '/board.html') return 'board';
+    if (path === 'schedule.html' || path === '/schedule.html') return 'schedule';
+    if (path === 'inquiry.html' || path === '/inquiry.html') return 'inquiry';
+    if (path === 'sponsor.html' || path === '/sponsor.html') return 'sponsor';
+    if (path === 'youtube.html' || path === '/youtube.html') return 'youtube';
+    if (path.includes('instagram.com')) return 'instagram';
+    if (path === 'admin.html' || path === '/admin.html') return 'admin';
+    if (path === 'login.html' || path === '/login.html') return 'login';
+    // index.html#about 등 해시 포함도 'about' 처리
+    if (href.includes('index.html#about') || href === '#about') return 'about';
     return null;
 }
 
