@@ -1578,9 +1578,7 @@ def check_username():
 @app.route('/uploads/<path:filename>')
 def serve_upload(filename):
     try:
-        # 경로 분리
         path_parts = filename.split('/')
-        
         # 악보 파일에 대한 권한 확인 (scores 또는 scores/default 경로)
         if len(path_parts) > 0 and (
             path_parts[0] == 'scores' or 
@@ -1589,12 +1587,9 @@ def serve_upload(filename):
             # 로그인 여부 확인
             if 'user_id' not in session:
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
-                
-            # 사용자 정보 확인
             users = load_users(); user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
-            # 특별회원, 관리자만 다운로드 가능
             if user['role'] not in ['admin', 'special']:
                 return jsonify({'error': '특별회원 및 관리자만 악보 파일을 다운로드할 수 있습니다.'}), 403
         # 음악 파일에 대한 권한 확인 (music/ai, music/mr, music/live)
@@ -1606,9 +1601,21 @@ def serve_upload(filename):
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
             if user['role'] not in ['admin', 'special']:
                 return jsonify({'error': '특별회원 및 관리자만 음악 파일을 다운로드할 수 있습니다.'}), 403
-        
+        # scores 파일 요청 시 하위 default 폴더도 함께 찾기
+        if len(path_parts) > 1 and path_parts[0] == 'scores':
+            base_dir = os.path.join(UPLOAD_FOLDER, 'scores')
+            file_name = '/'.join(path_parts[1:])
+            file_path = os.path.join(base_dir, file_name)
+            default_path = os.path.join(base_dir, 'default', file_name)
+            if os.path.exists(file_path):
+                return send_from_directory(base_dir, file_name)
+            elif os.path.exists(default_path):
+                return send_from_directory(os.path.join(base_dir, 'default'), file_name)
+            else:
+                print(f"[serve_upload] scores 파일 없음: {file_path} / {default_path}")
+                return "File not found", 404
+        # 기존 처리
         if len(path_parts) > 1:
-            # 마지막 부분은 파일 이름, 나머지는 디렉토리 경로
             directory = os.path.join(UPLOAD_FOLDER, *path_parts[:-1])
             file_name = path_parts[-1]
             print(f"수정된 파일 경로: {directory}/{file_name}")

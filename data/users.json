@@ -18,5 +18,15 @@
     "phone": "010-5853-7177",
     "role": "special",
     "created_at": "2025-05-08 16:01:50"
+  },
+  {
+    "id": 3,
+    "username": "dldmsdn",
+    "password": "midi6150",
+    "name": "이정보",
+    "email": "smixdown2@gmail.com",
+    "phone": "010-6688-7177",
+    "role": "regular",
+    "created_at": "2025-05-11 16:34:51"
   }
 ]

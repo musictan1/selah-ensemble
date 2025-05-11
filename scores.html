@@ -163,9 +163,9 @@
                         <button onclick="togglePreview(this)" class="preview-btn">미리보기</button>
                         <button onclick="editFile('scores', '바람꽃.pdf')" class="edit-btn">수정</button>
                         <button onclick="deleteFile('scores', '바람꽃.pdf')" class="delete-btn">삭제</button>
-                        <a href="uploads/scores/바람꽃.pdf" download class="download-btn">다운로드</a>
+                        <a href="uploads/scores/%EB%B0%94%EB%9E%8C%EA%BD%83.pdf" download class="download-btn">다운로드</a>
                     </div>
-                    <iframe class="pdf-preview" src="uploads/scores/바람꽃.pdf"></iframe>
+                    <iframe class="pdf-preview" src="uploads/scores/%EB%B0%94%EB%9E%8C%EA%BD%83.pdf"></iframe>
                 </div>
                 <div class="file-item">
                     <span class="file-name">주님의증인(완성).pdf</span>
@@ -173,9 +173,9 @@
                         <button onclick="togglePreview(this)" class="preview-btn">미리보기</button>
                         <button onclick="editFile('scores', '주님의증인(완성).pdf')" class="edit-btn">수정</button>
                         <button onclick="deleteFile('scores', '주님의증인(완성).pdf')" class="delete-btn">삭제</button>
-                        <a href="uploads/scores/주님의증인(완성).pdf" download class="download-btn">다운로드</a>
+                        <a href="uploads/scores/%EC%A3%BC%EB%8B%98%EC%9D%98%EC%A6%9D%EC%9D%B8(%EC%99%84%EC%84%B1).pdf" download class="download-btn">다운로드</a>
                     </div>
-                    <iframe class="pdf-preview" src="uploads/scores/주님의증인(완성).pdf"></iframe>
+                    <iframe class="pdf-preview" src="uploads/scores/%EC%A3%BC%EB%8B%98%EC%9D%98%EC%A6%9D%EC%9D%B8(%EC%99%84%EC%84%B1).pdf"></iframe>
                 </div>
             </div>
         </section>
@@ -304,7 +304,7 @@
                 pdfPreview.style.display = 'block';
                 // 미리보기 버튼 클릭 시에만 src 설정
                 const filename = button.parentElement.previousElementSibling.textContent;
-                pdfPreview.src = `uploads/scores/${filename}`;
+                pdfPreview.src = `uploads/scores/${encodeURIComponent(filename)}`;
             } else {
                 pdfPreview.style.display = 'none';
                 pdfPreview.src = ''; // src 초기화
@@ -355,7 +355,22 @@
             previewButton.className = 'preview-btn';
             previewButton.textContent = '미리보기';
             previewButton.onclick = function() {
-                togglePreview(this);
+                // 동적으로 생성된 파일도 인코딩하여 src 할당
+                const pdfPreview = item.querySelector('.pdf-preview');
+                const allPdfPreviews = document.querySelectorAll('.pdf-preview');
+                allPdfPreviews.forEach(pdf => {
+                    if (pdf !== pdfPreview) {
+                        pdf.style.display = 'none';
+                        pdf.src = '';
+                    }
+                });
+                if (pdfPreview.style.display === 'none' || !pdfPreview.style.display) {
+                    pdfPreview.style.display = 'block';
+                    pdfPreview.src = `uploads/scores/${encodeURIComponent(filename)}`;
+                } else {
+                    pdfPreview.style.display = 'none';
+                    pdfPreview.src = '';
+                }
             };
             
             // 수정 버튼 (관리자만 표시)
@@ -384,7 +399,7 @@
             const downloadButton = document.createElement('a');
             downloadButton.className = 'download-btn';
             downloadButton.textContent = '다운로드';
-            downloadButton.href = `uploads/scores/${filename}`;
+            downloadButton.href = `uploads/scores/${encodeURIComponent(filename)}`;
             downloadButton.download = filename;
             
             // 미리보기 iframe (초기에는 src를 설정하지 않음)
