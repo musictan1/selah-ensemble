@@ -329,12 +329,13 @@
             const fileItem = button.closest('.file-item');
             const previewContainer = fileItem.querySelector('.pdf-preview');
             const downloadLink = fileItem.querySelector('.download-btn');
-            const pdfUrl = downloadLink.href;
+            const pdfUrl = new URL(downloadLink.href);
+            pdfUrl.searchParams.set('preview', 'true');  // 미리보기 파라미터 추가
             
             console.log('미리보기 토글:', {
                 fileItem: fileItem,
                 previewContainer: previewContainer,
-                pdfUrl: pdfUrl
+                pdfUrl: pdfUrl.toString()
             });
             
             if (previewContainer.style.display === 'none' || !previewContainer.style.display) {
@@ -349,7 +350,7 @@
                 previewContainer.style.display = 'block';
                 previewContainer.innerHTML = '<div class="pdf-loading">PDF 로딩 중...</div>';
                 
-                console.log('PDF.js 로드 시작:', pdfUrl);
+                console.log('PDF.js 로드 시작:', pdfUrl.toString());
 
                 // PDF 데이터를 먼저 가져오기
                 fetch(pdfUrl, {
@@ -397,16 +398,16 @@
                             container.appendChild(pageDiv);
                         }).catch(function(error) {
                             console.error('PDF 페이지 렌더링 오류:', error);
-                            showError(previewContainer, pdfUrl, error);
+                            showError(previewContainer, pdfUrl.toString(), error);
                         });
                     }).catch(function(error) {
                         console.error('PDF 페이지 가져오기 오류:', error);
-                        showError(previewContainer, pdfUrl, error);
+                        showError(previewContainer, pdfUrl.toString(), error);
                     });
                 })
                 .catch(function(error) {
                     console.error('PDF 로드 오류:', error);
-                    showError(previewContainer, pdfUrl, error);
+                    showError(previewContainer, pdfUrl.toString(), error);
                 });
             } else {
                 previewContainer.style.display = 'none';
