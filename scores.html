@@ -318,6 +318,13 @@
         // PDF.js 워커 설정
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+        // PDF 로드 옵션 설정
+        const pdfLoadOptions = {
+            withCredentials: true,  // 인증 정보 포함
+            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+            cMapPacked: true
+        };
+
         function togglePreview(button) {
             const fileItem = button.closest('.file-item');
             const previewContainer = fileItem.querySelector('.pdf-preview');
@@ -343,9 +350,25 @@
                 previewContainer.innerHTML = '<div class="pdf-loading">PDF 로딩 중...</div>';
                 
                 console.log('PDF.js 로드 시작:', pdfUrl);
-                
-                // PDF 로드 및 표시
-                pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+
+                // PDF 데이터를 먼저 가져오기
+                fetch(pdfUrl, {
+                    credentials: 'include',  // 인증 정보 포함
+                    headers: {
+                        'Accept': 'application/pdf'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.arrayBuffer();
+                })
+                .then(arrayBuffer => {
+                    // ArrayBuffer를 사용하여 PDF 로드
+                    return pdfjsLib.getDocument({data: arrayBuffer, ...pdfLoadOptions}).promise;
+                })
+                .then(function(pdf) {
                     console.log('PDF 로드 성공:', pdf.numPages, '페이지');
                     previewContainer.innerHTML = '<div class="pdf-container"></div>';
                     const container = previewContainer.querySelector('.pdf-container');
@@ -374,26 +397,34 @@
                             container.appendChild(pageDiv);
                         }).catch(function(error) {
                             console.error('PDF 페이지 렌더링 오류:', error);
+                            showError(previewContainer, pdfUrl, error);
                         });
                     }).catch(function(error) {
                         console.error('PDF 페이지 가져오기 오류:', error);
+                        showError(previewContainer, pdfUrl, error);
                     });
-                }).catch(function(error) {
+                })
+                .catch(function(error) {
                     console.error('PDF 로드 오류:', error);
-                    previewContainer.innerHTML = `
-                        <div class="pdf-error" style="display: block;">
-                            PDF를 불러올 수 없습니다. 오류: ${error.message}
-                            <br><br>
-                            <button onclick="window.open('${pdfUrl}', '_blank')" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                새 창에서 열기
-                            </button>
-                        </div>
-                    `;
+                    showError(previewContainer, pdfUrl, error);
                 });
             } else {
                 previewContainer.style.display = 'none';
                 previewContainer.innerHTML = '';
             }
+        }
+
+        // 오류 표시 함수
+        function showError(container, pdfUrl, error) {
+            container.innerHTML = `
+                <div class="pdf-error" style="display: block;">
+                    PDF를 불러올 수 없습니다. 오류: ${error.message}
+                    <br><br>
+                    <button onclick="window.open('${pdfUrl}', '_blank')" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        새 창에서 열기
+                    </button>
+                </div>
+            `;
         }
 
         // 파일 목록 불러오기
