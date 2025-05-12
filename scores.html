@@ -6,6 +6,7 @@
     <title>악보파일 - 셀라앙상블 찬양단</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         .file-list {
             margin: 20px 0;
@@ -59,6 +60,33 @@
             width: 100%;
             height: 500px;
             border: 1px solid #ddd;
+            background: #f8f9fa;
+            overflow: auto;
+        }
+        .pdf-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .pdf-page {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: white;
+        }
+        .pdf-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #666;
+        }
+        .pdf-error {
+            display: none;
+            color: #dc3545;
+            text-align: center;
+            padding: 20px;
         }
         .no-files {
             text-align: center;
@@ -287,27 +315,69 @@
             });
         }
 
+        // PDF.js 워커 설정
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
         function togglePreview(button) {
-            const pdfPreview = button.parentElement.nextElementSibling;
-            const allPdfPreviews = document.querySelectorAll('.pdf-preview');
+            const fileItem = button.closest('.file-item');
+            const previewContainer = fileItem.querySelector('.pdf-preview');
+            const downloadLink = fileItem.querySelector('.download-btn');
+            const pdfUrl = downloadLink.href;
             
-            // 다른 모든 미리보기 닫기
-            allPdfPreviews.forEach(pdf => {
-                if (pdf !== pdfPreview) {
-                    pdf.style.display = 'none';
-                    pdf.src = ''; // src 초기화
-                }
-            });
-            
-            // 현재 미리보기 토글
-            if (pdfPreview.style.display === 'none' || !pdfPreview.style.display) {
-                pdfPreview.style.display = 'block';
-                // 미리보기 버튼 클릭 시에만 src 설정
-                const filename = button.parentElement.previousElementSibling.textContent;
-                pdfPreview.src = `uploads/scores/${encodeURIComponent(filename)}`;
+            if (previewContainer.style.display === 'none' || !previewContainer.style.display) {
+                // 다른 모든 미리보기 닫기
+                document.querySelectorAll('.pdf-preview').forEach(container => {
+                    if (container !== previewContainer) {
+                        container.style.display = 'none';
+                        container.innerHTML = '';
+                    }
+                });
+                
+                previewContainer.style.display = 'block';
+                previewContainer.innerHTML = '<div class="pdf-loading">PDF 로딩 중...</div>';
+                
+                // PDF 로드 및 표시
+                pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+                    previewContainer.innerHTML = '<div class="pdf-container"></div>';
+                    const container = previewContainer.querySelector('.pdf-container');
+                    
+                    // 첫 페이지만 표시
+                    pdf.getPage(1).then(function(page) {
+                        const scale = 1.5;
+                        const viewport = page.getViewport({scale: scale});
+                        
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        
+                        page.render(renderContext).promise.then(function() {
+                            const pageDiv = document.createElement('div');
+                            pageDiv.className = 'pdf-page';
+                            pageDiv.appendChild(canvas);
+                            container.appendChild(pageDiv);
+                        });
+                    });
+                }).catch(function(error) {
+                    console.error('PDF 로드 오류:', error);
+                    previewContainer.innerHTML = `
+                        <div class="pdf-error">
+                            PDF를 불러올 수 없습니다. 오류: ${error.message}
+                            <br><br>
+                            <button onclick="window.open('${pdfUrl}', '_blank')" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                새 창에서 열기
+                            </button>
+                        </div>
+                    `;
+                });
             } else {
-                pdfPreview.style.display = 'none';
-                pdfPreview.src = ''; // src 초기화
+                previewContainer.style.display = 'none';
+                previewContainer.innerHTML = '';
             }
         }
 
@@ -355,22 +425,7 @@
             previewButton.className = 'preview-btn';
             previewButton.textContent = '미리보기';
             previewButton.onclick = function() {
-                // 동적으로 생성된 파일도 인코딩하여 src 할당
-                const pdfPreview = item.querySelector('.pdf-preview');
-                const allPdfPreviews = document.querySelectorAll('.pdf-preview');
-                allPdfPreviews.forEach(pdf => {
-                    if (pdf !== pdfPreview) {
-                        pdf.style.display = 'none';
-                        pdf.src = '';
-                    }
-                });
-                if (pdfPreview.style.display === 'none' || !pdfPreview.style.display) {
-                    pdfPreview.style.display = 'block';
-                    pdfPreview.src = `uploads/scores/${encodeURIComponent(filename)}`;
-                } else {
-                    pdfPreview.style.display = 'none';
-                    pdfPreview.src = '';
-                }
+                togglePreview(this);
             };
             
             // 수정 버튼 (관리자만 표시)
@@ -402,11 +457,6 @@
             downloadButton.href = `uploads/scores/${encodeURIComponent(filename)}`;
             downloadButton.download = filename;
             
-            // 미리보기 iframe (초기에는 src를 설정하지 않음)
-            const pdfPreview = document.createElement('iframe');
-            pdfPreview.className = 'pdf-preview';
-            pdfPreview.style.display = 'none';
-            
             fileActions.appendChild(previewButton);
             fileActions.appendChild(editButton);
             fileActions.appendChild(deleteButton);
@@ -414,7 +464,6 @@
             
             item.appendChild(fileName);
             item.appendChild(fileActions);
-            item.appendChild(pdfPreview);
             
             return item;
         }
