@@ -1584,20 +1584,19 @@ def serve_upload(filename):
             path_parts[0] == 'scores' or 
             (len(path_parts) > 1 and path_parts[0] == 'scores' and path_parts[1] == 'default')
         ):
-            # 로그인 여부 확인
+            # 미리보기를 위한 요청인지 먼저 확인
+            is_preview = request.args.get('preview') == 'true'
+            
+            # 로그인 여부 확인 (미리보기와 다운로드 모두 로그인 필요)
             if 'user_id' not in session:
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
             users = load_users(); user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
                 
-            # 미리보기를 위한 요청인지 확인
-            is_preview = request.args.get('preview') == 'true'
-            
-            # 미리보기가 아닌 경우에만 권한 체크
+            # 미리보기가 아닌 경우에만 특별 권한 체크
             if not is_preview and user['role'] not in ['admin', 'special']:
                 return jsonify({'error': '특별회원 및 관리자만 악보 파일을 다운로드할 수 있습니다.'}), 403
-                
         # 음악 파일에 대한 권한 확인 (music/ai, music/mr, music/live)
         if len(path_parts) > 1 and path_parts[0] == 'music' and path_parts[1] in ['ai', 'mr', 'live']:
             if 'user_id' not in session:

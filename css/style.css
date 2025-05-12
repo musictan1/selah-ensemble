@@ -331,3 +331,47 @@ footer {
         padding: 0;
     }
 }
+
+/* PDF 미리보기 스타일 개선 */
+.pdf-preview {
+    display: none;
+    margin-top: 10px;
+    width: 100vw;
+    max-width: 100vw;
+    height: 70vh;
+    min-height: 300px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.pdf-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    overflow-x: auto;
+}
+
+.pdf-page {
+    max-width: 100vw;
+}
+
+@media (max-width: 600px) {
+    .pdf-preview {
+        width: 100vw;
+        max-width: 100vw;
+        height: 60vh;
+        min-height: 200px;
+        padding: 0;
+    }
+    .pdf-container {
+        padding: 0;
+    }
+    .pdf-page {
+        max-width: 100vw;
+    }
+}
