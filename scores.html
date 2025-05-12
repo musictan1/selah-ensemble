@@ -324,6 +324,12 @@
             const downloadLink = fileItem.querySelector('.download-btn');
             const pdfUrl = downloadLink.href;
             
+            console.log('미리보기 토글:', {
+                fileItem: fileItem,
+                previewContainer: previewContainer,
+                pdfUrl: pdfUrl
+            });
+            
             if (previewContainer.style.display === 'none' || !previewContainer.style.display) {
                 // 다른 모든 미리보기 닫기
                 document.querySelectorAll('.pdf-preview').forEach(container => {
@@ -336,13 +342,17 @@
                 previewContainer.style.display = 'block';
                 previewContainer.innerHTML = '<div class="pdf-loading">PDF 로딩 중...</div>';
                 
+                console.log('PDF.js 로드 시작:', pdfUrl);
+                
                 // PDF 로드 및 표시
                 pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+                    console.log('PDF 로드 성공:', pdf.numPages, '페이지');
                     previewContainer.innerHTML = '<div class="pdf-container"></div>';
                     const container = previewContainer.querySelector('.pdf-container');
                     
                     // 첫 페이지만 표시
                     pdf.getPage(1).then(function(page) {
+                        console.log('PDF 페이지 렌더링 시작');
                         const scale = 1.5;
                         const viewport = page.getViewport({scale: scale});
                         
@@ -357,16 +367,21 @@
                         };
                         
                         page.render(renderContext).promise.then(function() {
+                            console.log('PDF 페이지 렌더링 완료');
                             const pageDiv = document.createElement('div');
                             pageDiv.className = 'pdf-page';
                             pageDiv.appendChild(canvas);
                             container.appendChild(pageDiv);
+                        }).catch(function(error) {
+                            console.error('PDF 페이지 렌더링 오류:', error);
                         });
+                    }).catch(function(error) {
+                        console.error('PDF 페이지 가져오기 오류:', error);
                     });
                 }).catch(function(error) {
                     console.error('PDF 로드 오류:', error);
                     previewContainer.innerHTML = `
-                        <div class="pdf-error">
+                        <div class="pdf-error" style="display: block;">
                             PDF를 불러올 수 없습니다. 오류: ${error.message}
                             <br><br>
                             <button onclick="window.open('${pdfUrl}', '_blank')" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
@@ -457,6 +472,11 @@
             downloadButton.href = `uploads/scores/${encodeURIComponent(filename)}`;
             downloadButton.download = filename;
             
+            // PDF 미리보기 컨테이너 생성
+            const previewContainer = document.createElement('div');
+            previewContainer.className = 'pdf-preview';
+            previewContainer.style.display = 'none';
+            
             fileActions.appendChild(previewButton);
             fileActions.appendChild(editButton);
             fileActions.appendChild(deleteButton);
@@ -464,6 +484,7 @@
             
             item.appendChild(fileName);
             item.appendChild(fileActions);
+            item.appendChild(previewContainer);  // 미리보기 컨테이너 추가
             
             return item;
         }
