@@ -836,13 +836,16 @@
             const fileActions = document.createElement('div');
             fileActions.className = 'file-actions';
             
-            // 미리듣기 버튼 (모든 사용자에게 표시)
-            const previewButton = document.createElement('button');
-            previewButton.className = 'preview-btn';
-            previewButton.textContent = '미리듣기';
-            previewButton.onclick = function() {
-                togglePreview(this);
-            };
+            // 미리듣기 버튼 (로그인한 사용자에게만 표시)
+            if (currentUser) {
+                const previewButton = document.createElement('button');
+                previewButton.className = 'preview-btn';
+                previewButton.textContent = '미리듣기';
+                previewButton.onclick = function() {
+                    togglePreview(this);
+                };
+                fileActions.appendChild(previewButton);
+            }
             
             // 파일명 변경 버튼 (관리자만 표시)
             const renameButton = document.createElement('button');
@@ -895,7 +898,6 @@
             }
             
             // 버튼들을 fileActions에 추가
-            fileActions.appendChild(previewButton);
             fileActions.appendChild(renameButton);
             fileActions.appendChild(editButton);
             fileActions.appendChild(deleteButton);
