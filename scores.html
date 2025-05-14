@@ -498,7 +498,7 @@
             const fileActions = document.createElement('div');
             fileActions.className = 'file-actions';
             
-            // 미리보기 버튼 (로그인한 사용자에게만 표시)
+            // 미리보기 버튼 (로그인한 사용자만)
             if (isLoggedIn) {
                 const previewButton = document.createElement('button');
                 previewButton.className = 'preview-btn';
@@ -509,30 +509,24 @@
                 fileActions.appendChild(previewButton);
             }
             
-            // 수정 버튼 (관리자만 표시)
-            const editButton = document.createElement('button');
-            editButton.className = 'edit-btn';
-            editButton.textContent = '수정';
-            editButton.onclick = function() {
-                editFile('scores', filename);
-            };
-            if (!isAdmin) {
-                editButton.style.display = 'none';
-            }
-            
-            // 삭제 버튼 (관리자만 표시)
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-btn';
-            deleteButton.textContent = '삭제';
-            deleteButton.onclick = function() {
-                deleteFile('scores', filename);
-            };
-            if (!isAdmin) {
-                deleteButton.style.display = 'none';
-            }
-            
-            // 다운로드 버튼 (로그인한 사용자에게만 표시)
-            if (isLoggedIn) {
+            // 수정/삭제/다운로드 버튼 (관리자만)
+            if (isAdmin) {
+                const editButton = document.createElement('button');
+                editButton.className = 'edit-btn';
+                editButton.textContent = '수정';
+                editButton.onclick = function() {
+                    editFile('scores', filename);
+                };
+                fileActions.appendChild(editButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-btn';
+                deleteButton.textContent = '삭제';
+                deleteButton.onclick = function() {
+                    deleteFile('scores', filename);
+                };
+                fileActions.appendChild(deleteButton);
+
                 const downloadButton = document.createElement('a');
                 downloadButton.className = 'download-btn';
                 downloadButton.textContent = '다운로드';
@@ -541,17 +535,14 @@
                 fileActions.appendChild(downloadButton);
             }
             
-            // PDF 미리보기 컨테이너 생성
+            item.appendChild(fileName);
+            item.appendChild(fileActions);
+            
+            // 미리보기 컨테이너
             const previewContainer = document.createElement('div');
             previewContainer.className = 'pdf-preview';
             previewContainer.style.display = 'none';
-            
-            fileActions.appendChild(editButton);
-            fileActions.appendChild(deleteButton);
-            
-            item.appendChild(fileName);
-            item.appendChild(fileActions);
-            item.appendChild(previewContainer);  // 미리보기 컨테이너 추가
+            item.appendChild(previewContainer);
             
             return item;
         }
