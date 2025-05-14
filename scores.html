@@ -518,18 +518,14 @@
             fileActions.className = 'file-actions';
             
             // 미리보기 버튼 (로그인한 사용자에게만 표시)
-            const previewButton = document.createElement('button');
-            previewButton.className = 'preview-btn';
-            previewButton.textContent = '미리보기';
-            previewButton.onclick = function() {
-                if (!isLoggedIn) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    return;
-                }
-                togglePreview(this);
-            };
-            if (!isLoggedIn) {
-                previewButton.style.display = 'none';
+            if (isLoggedIn) {
+                const previewButton = document.createElement('button');
+                previewButton.className = 'preview-btn';
+                previewButton.textContent = '미리보기';
+                previewButton.onclick = function() {
+                    togglePreview(this);
+                };
+                fileActions.appendChild(previewButton);
             }
             
             // 수정 버튼 (관리자만 표시)
@@ -566,7 +562,6 @@
             previewContainer.className = 'pdf-preview';
             previewContainer.style.display = 'none';
             
-            fileActions.appendChild(previewButton);
             fileActions.appendChild(editButton);
             fileActions.appendChild(deleteButton);
             fileActions.appendChild(downloadButton);
