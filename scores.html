@@ -233,26 +233,7 @@
                 </form>
             </div>
             <div class="file-list">
-                <div class="file-item">
-                    <span class="file-name">바람꽃.pdf</span>
-                    <div class="file-actions">
-                        <button onclick="togglePreview(this)" class="preview-btn">미리보기</button>
-                        <button onclick="editFile('scores', '바람꽃.pdf')" class="edit-btn">수정</button>
-                        <button onclick="deleteFile('scores', '바람꽃.pdf')" class="delete-btn">삭제</button>
-                        <a href="uploads/scores/%EB%B0%94%EB%9E%8C%EA%BD%83.pdf" download class="download-btn">다운로드</a>
-                    </div>
-                    <iframe class="pdf-preview" src="uploads/scores/%EB%B0%94%EB%9E%8C%EA%BD%83.pdf"></iframe>
-                </div>
-                <div class="file-item">
-                    <span class="file-name">주님의증인(완성).pdf</span>
-                    <div class="file-actions">
-                        <button onclick="togglePreview(this)" class="preview-btn">미리보기</button>
-                        <button onclick="editFile('scores', '주님의증인(완성).pdf')" class="edit-btn">수정</button>
-                        <button onclick="deleteFile('scores', '주님의증인(완성).pdf')" class="delete-btn">삭제</button>
-                        <a href="uploads/scores/%EC%A3%BC%EB%8B%98%EC%9D%98%EC%A6%9D%EC%9D%B8(%EC%99%84%EC%84%B1).pdf" download class="download-btn">다운로드</a>
-                    </div>
-                    <iframe class="pdf-preview" src="uploads/scores/%EC%A3%BC%EB%8B%98%EC%9D%98%EC%A6%9D%EC%9D%B8(%EC%99%84%EC%84%B1).pdf"></iframe>
-                </div>
+                <!-- 동적으로만 파일 목록이 생성되도록, 정적 file-item은 모두 삭제 -->
             </div>
         </section>
     </main>
@@ -550,12 +531,15 @@
                 deleteButton.style.display = 'none';
             }
             
-            // 다운로드 버튼
-            const downloadButton = document.createElement('a');
-            downloadButton.className = 'download-btn';
-            downloadButton.textContent = '다운로드';
-            downloadButton.href = `uploads/scores/${encodeURIComponent(filename)}`;
-            downloadButton.download = filename;
+            // 다운로드 버튼 (로그인한 사용자에게만 표시)
+            if (isLoggedIn) {
+                const downloadButton = document.createElement('a');
+                downloadButton.className = 'download-btn';
+                downloadButton.textContent = '다운로드';
+                downloadButton.href = `uploads/scores/${encodeURIComponent(filename)}`;
+                downloadButton.download = filename;
+                fileActions.appendChild(downloadButton);
+            }
             
             // PDF 미리보기 컨테이너 생성
             const previewContainer = document.createElement('div');
@@ -564,7 +548,6 @@
             
             fileActions.appendChild(editButton);
             fileActions.appendChild(deleteButton);
-            fileActions.appendChild(downloadButton);
             
             item.appendChild(fileName);
             item.appendChild(fileActions);
