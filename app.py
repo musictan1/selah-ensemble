@@ -1590,9 +1590,15 @@ def serve_upload(filename):
             # 로그인 여부 확인 (미리보기와 다운로드 모두 로그인 필요)
             if 'user_id' not in session:
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
-            users = load_users(); user = next((u for u in users if u['id'] == session['user_id']), None)
+                
+            users = load_users()
+            user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
+                
+            # 신입회원은 악보 접근 불가
+            if user['role'] == 'new':
+                return jsonify({'error': '신입회원은 악보 파일에 접근할 수 없습니다.'}), 403
                 
             # 미리보기가 아닌 경우에만 특별 권한 체크
             if not is_preview and user['role'] not in ['admin', 'special']:
