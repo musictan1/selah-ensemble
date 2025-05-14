@@ -494,7 +494,7 @@
 
         // 파일 아이템 생성
         function createFileItem(filename) {
-            console.log('[createFileItem] isLoggedIn =', isLoggedIn, ', isAdmin =', isAdmin);
+            console.log('[createFileItem] isLoggedIn =', isLoggedIn, ', isAdmin =', isAdmin, ', currentUser =', currentUser);
             const item = document.createElement('div');
             item.className = 'file-item';
             
@@ -516,24 +516,26 @@
                 fileActions.appendChild(previewButton);
             }
             
-            // 수정/삭제/다운로드 버튼 (관리자만)
-            if (isAdmin) {
-                const editButton = document.createElement('button');
-                editButton.className = 'edit-btn';
-                editButton.textContent = '수정';
-                editButton.onclick = function() {
-                    editFile('scores', filename);
-                };
-                fileActions.appendChild(editButton);
+            // 수정/삭제/다운로드 버튼 (관리자 또는 특별회원)
+            if (isAdmin || (currentUser && currentUser.role === 'special')) {
+                if (isAdmin) {
+                    const editButton = document.createElement('button');
+                    editButton.className = 'edit-btn';
+                    editButton.textContent = '수정';
+                    editButton.onclick = function() {
+                        editFile('scores', filename);
+                    };
+                    fileActions.appendChild(editButton);
 
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'delete-btn';
-                deleteButton.textContent = '삭제';
-                deleteButton.onclick = function() {
-                    deleteFile('scores', filename);
-                };
-                fileActions.appendChild(deleteButton);
-
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'delete-btn';
+                    deleteButton.textContent = '삭제';
+                    deleteButton.onclick = function() {
+                        deleteFile('scores', filename);
+                    };
+                    fileActions.appendChild(deleteButton);
+                }
+                // 다운로드 버튼 (관리자, 특별회원 모두)
                 const downloadButton = document.createElement('a');
                 downloadButton.className = 'download-btn';
                 downloadButton.textContent = '다운로드';
