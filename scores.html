@@ -259,6 +259,7 @@
 
         // 사용자 인증 확인 함수
         async function checkAuth() {
+            isLoggedIn = false; // 항상 false로 초기화
             try {
                 const response = await fetch('/api/check-auth');
                 if (response.ok) {
@@ -266,7 +267,8 @@
                     if (data.authenticated || data.is_authenticated) {
                         currentUser = data.user;
                         isAdmin = currentUser.role === 'admin';
-                        console.log("로그인 상태: 관리자 권한 =", isAdmin);
+                        isLoggedIn = true;
+                        console.log('[checkAuth] 로그인 상태: isLoggedIn =', isLoggedIn, ', isAdmin =', isAdmin);
                         
                         // 관리자가 아닌 경우 수정/삭제 버튼 숨기기
                         if (!isAdmin) {
@@ -284,11 +286,11 @@
                             hideDownloadButtons();
                             showPermissionMessage();
                         }
-                        isLoggedIn = true;
                     } else {
                         currentUser = null;
                         isAdmin = false;
-                        console.log("로그인되지 않은 상태");
+                        isLoggedIn = false;
+                        console.log('[checkAuth] 비로그인 상태: isLoggedIn =', isLoggedIn);
                         hideAdminButtons();
                         
                         // 업로드 폼 숨기기
@@ -300,7 +302,8 @@
                 } else {
                     currentUser = null;
                     isAdmin = false;
-                    console.log("인증 확인 실패");
+                    isLoggedIn = false;
+                    console.log('[checkAuth] 인증 확인 실패: isLoggedIn =', isLoggedIn);
                     hideAdminButtons();
                     
                     // 업로드 폼 숨기기
@@ -313,6 +316,8 @@
                 console.error('인증 확인 중 오류 발생:', error);
                 currentUser = null;
                 isAdmin = false;
+                isLoggedIn = false;
+                console.log('[checkAuth] 인증 확인 중 오류: isLoggedIn =', isLoggedIn);
                 hideAdminButtons();
                 
                 // 업로드 폼 숨기기
@@ -461,6 +466,7 @@
 
         // 파일 목록 불러오기
         function loadFiles() {
+            console.log('[loadFiles] 호출 시 isLoggedIn =', isLoggedIn);
             fetch('/check_files?t=' + new Date().getTime())
                 .then(response => response.json())
                 .then(data => {
@@ -488,6 +494,7 @@
 
         // 파일 아이템 생성
         function createFileItem(filename) {
+            console.log('[createFileItem] isLoggedIn =', isLoggedIn, ', isAdmin =', isAdmin);
             const item = document.createElement('div');
             item.className = 'file-item';
             

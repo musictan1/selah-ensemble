@@ -581,15 +581,13 @@ def check_auth():
 @app.before_request
 def initialize():
     try:
-        # 기본 관리자 계정 설정
         users = load_users()
         print(f"초기화 - 현재 사용자 수: {len(users)}")  # 디버깅용 로그
-        
-        # 관리자 계정이 없으면 생성
+        # 관리자 계정이 없으면 기존 회원을 삭제하지 않고 관리자만 추가
         if not any(u['username'] == 'gofly4u' for u in users):
-            print("기본 관리자 계정 생성")  # 디버깅용 로그
+            print("기본 관리자 계정 추가")  # 디버깅용 로그
             admin_user = {
-                'id': 1,  # ID를 1로 고정
+                'id': max([u['id'] for u in users], default=0) + 1,
                 'username': 'gofly4u',
                 'password': 'admin123',
                 'name': '관리자',
@@ -597,9 +595,9 @@ def initialize():
                 'role': 'admin',
                 'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
-            users = [admin_user]  # 기존 사용자 목록을 초기화하고 관리자만 추가
+            users.append(admin_user)
             save_users(users)
-            print(f"관리자 계정 생성 완료: {admin_user}")  # 디버깅용 로그
+            print(f"관리자 계정 추가 완료: {admin_user}")  # 디버깅용 로그
     except Exception as e:
         print(f"초기화 중 오류 발생: {str(e)}")  # 디버깅용 로그
 
@@ -1584,34 +1582,29 @@ def serve_upload(filename):
             path_parts[0] == 'scores' or 
             (len(path_parts) > 1 and path_parts[0] == 'scores' and path_parts[1] == 'default')
         ):
-            # 미리보기를 위한 요청인지 먼저 확인
             is_preview = request.args.get('preview') == 'true'
-            
-            # 로그인 여부 확인 (미리보기와 다운로드 모두 로그인 필요)
             if 'user_id' not in session:
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
-                
             users = load_users()
             user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
-                
-            # 신입회원은 악보 접근 불가
             if user['role'] == 'new':
                 return jsonify({'error': '신입회원은 악보 파일에 접근할 수 없습니다.'}), 403
-                
-            # 미리보기가 아닌 경우에만 특별 권한 체크
             if not is_preview and user['role'] not in ['admin', 'special']:
                 return jsonify({'error': '특별회원 및 관리자만 악보 파일을 다운로드할 수 있습니다.'}), 403
         # 음악 파일에 대한 권한 확인 (music/ai, music/mr, music/live)
         if len(path_parts) > 1 and path_parts[0] == 'music' and path_parts[1] in ['ai', 'mr', 'live']:
+            # 미리듣기(미리보기)든 다운로드든 무조건 로그인 필요
             if 'user_id' not in session:
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
-            users = load_users(); user = next((u for u in users if u['id'] == session['user_id']), None)
+            users = load_users()
+            user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
+            # 특별회원, 관리자만 다운로드/미리듣기 허용
             if user['role'] not in ['admin', 'special']:
-                return jsonify({'error': '특별회원 및 관리자만 음악 파일을 다운로드할 수 있습니다.'}), 403
+                return jsonify({'error': '특별회원 및 관리자만 음악 파일을 이용할 수 있습니다.'}), 403
         # scores 파일 요청 시 하위 default 폴더도 함께 찾기
         if len(path_parts) > 1 and path_parts[0] == 'scores':
             base_dir = os.path.join(UPLOAD_FOLDER, 'scores')
