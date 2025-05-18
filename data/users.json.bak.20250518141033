@@ -38,15 +38,5 @@
     "phone": "010-8021-1250",
     "role": "special",
     "created_at": "2025-05-14 07:33:07"
-  },
-  {
-    "id": 5,
-    "username": "ass",
-    "password": "midi6150",
-    "name": "양이래",
-    "email": "diddl@naver.com",
-    "phone": "010-5566-1123",
-    "role": "new",
-    "created_at": "2025-05-18 14:10:33"
   }
 ]

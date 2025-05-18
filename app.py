@@ -2849,6 +2849,12 @@ def send_email(recipient, subject, body):
         print(f"이메일 전송 중 오류 발생: {str(e)}")
         return False
 
+# 사용자 변경 로그 기록 함수 (회원가입, 삭제, 권한변경 등에서 사용)
+def log_user_action(action, user_info):
+    log_path = os.path.join(DATA_FOLDER, 'user_actions.log')
+    with open(log_path, 'a', encoding='utf-8') as f:
+        f.write(f"{datetime.now().isoformat()} | {action} | {user_info}\n")
+
 import os
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
