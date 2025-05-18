@@ -392,12 +392,14 @@ def save_users(users):
     try:
         # 디렉토리가 없으면 생성
         os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
-        
+        # 백업: 기존 파일이 있으면 변경 전 백업본 생성
+        if os.path.exists(USERS_FILE):
+            backup_path = USERS_FILE + '.bak.' + datetime.now().strftime('%Y%m%d%H%M%S')
+            shutil.copy2(USERS_FILE, backup_path)
         # 임시 파일에 먼저 저장
         temp_file = USERS_FILE + '.tmp'
         with open(temp_file, 'w', encoding='utf-8') as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
-            
         # 임시 파일을 실제 파일로 이동 (원자적 연산)
         os.replace(temp_file, USERS_FILE)
     except Exception as e:
@@ -583,11 +585,11 @@ def initialize():
     try:
         users = load_users()
         print(f"초기화 - 현재 사용자 수: {len(users)}")  # 디버깅용 로그
-        # 관리자 계정이 없으면 기존 회원을 삭제하지 않고 관리자만 추가
-        if not any(u['username'] == 'gofly4u' for u in users):
-            print("기본 관리자 계정 추가")  # 디버깅용 로그
+        # users.json이 비어있을 때만 관리자 계정 추가
+        if users is not None and len(users) == 0:
+            print("users.json이 비어있어 관리자 계정만 추가")
             admin_user = {
-                'id': max([u['id'] for u in users], default=0) + 1,
+                'id': 1,
                 'username': 'gofly4u',
                 'password': 'admin123',
                 'name': '관리자',
