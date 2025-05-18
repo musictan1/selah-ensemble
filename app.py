@@ -1510,27 +1510,21 @@ def register():
             data = request.get_json()
         else:
             data = request.form
-        
         username = data.get('username')
         password = data.get('password')
         name = data.get('name')
         email = data.get('email')
         phone = data.get('phone')
-        
         if not all([username, password, name, email, phone]):
             return jsonify({'error': '모든 필드를 입력해주세요.'}), 400
-            
         users = load_users()
-        
         # 아이디 중복 확인
         if any(u['username'] == username for u in users):
             return jsonify({'error': '이미 사용 중인 아이디입니다.'}), 400
-            
         # 새 사용자 ID 생성
         new_id = 1
         if users:
             new_id = max(u['id'] for u in users) + 1
-            
         # 새 사용자 추가
         new_user = {
             'id': new_id,
@@ -1542,10 +1536,9 @@ def register():
             'role': 'new',  # 기본 권한은 신입회원
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
-        
         users.append(new_user)
         save_users(users)
-        
+        log_user_action('register', new_user)
         return jsonify({'success': True, 'message': '회원가입이 완료되었습니다.'})
     except Exception as e:
         print(f"회원가입 중 오류 발생: {e}")
@@ -1721,7 +1714,7 @@ def delete_user(user_id):
         # 사용자 삭제
         users.remove(user_to_delete)
         save_users(users)
-        
+        log_user_action('delete', user_to_delete)
         return jsonify({'success': True, 'message': '사용자가 삭제되었습니다.'})
     except Exception as e:
         print(f"사용자 삭제 중 오류 발생: {e}")
@@ -1760,9 +1753,10 @@ def update_user_role(user_id):
             return jsonify({'error': '관리자 계정의 역할은 변경할 수 없습니다.'}), 403
             
         # 역할 업데이트
+        old_role = user_to_update['role']
         user_to_update['role'] = new_role
         save_users(users)
-        
+        log_user_action('update_role', {'id': user_to_update['id'], 'username': user_to_update['username'], 'old_role': old_role, 'new_role': new_role})
         return jsonify({'success': True, 'message': '사용자 역할이 업데이트되었습니다.'})
     except Exception as e:
         print(f"사용자 역할 수정 중 오류 발생: {e}")
