@@ -143,15 +143,21 @@
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
+            
+            // 입력값 검증
+            if (!username || !password || !confirmPassword || !name || !email || !phone) {
+                errorMessage.textContent = '모든 필드를 입력해주세요.';
+                return;
+            }
             
             // 비밀번호 확인
             if (password !== confirmPassword) {
@@ -166,34 +172,82 @@
                 return;
             }
             
+            // 이메일 형식 검사
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorMessage.textContent = '올바른 이메일 형식을 입력해주세요.';
+                return;
+            }
+            
             try {
-                const formData = new FormData();
-                formData.append('username', username);
-                formData.append('password', password);
-                formData.append('name', name);
-                formData.append('email', email);
-                formData.append('phone', phone);
+                console.log('회원가입 요청 시작');
                 
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    body: formData
-                });
+                // 모바일 호환성을 위해 JSON과 FormData 모두 시도
+                let response;
+                let requestData;
+                
+                // 먼저 JSON 형식으로 시도
+                try {
+                    requestData = {
+                        username: username,
+                        password: password,
+                        name: name,
+                        email: email,
+                        phone: phone
+                    };
+                    
+                    console.log('JSON 형식으로 요청 시도:', requestData);
+                    
+                    response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    console.log('JSON 요청 응답 상태:', response.status);
+                    
+                } catch (jsonError) {
+                    console.log('JSON 요청 실패, FormData로 재시도:', jsonError);
+                    
+                    // JSON 실패시 FormData로 재시도
+                    const formData = new FormData();
+                    formData.append('username', username);
+                    formData.append('password', password);
+                    formData.append('name', name);
+                    formData.append('email', email);
+                    formData.append('phone', phone);
+                    
+                    response = await fetch('/api/register', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    console.log('FormData 요청 응답 상태:', response.status);
+                }
                 
                 const data = await response.json();
+                console.log('서버 응답 데이터:', data);
                 
                 if (response.ok) {
                     errorMessage.textContent = '';
                     successMessage.textContent = '회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.';
+                    
+                    // 성공 로그
+                    console.log('회원가입 성공:', data);
+                    
                     setTimeout(() => {
                         window.location.href = 'login.html';
                     }, 2000);
                 } else {
                     errorMessage.textContent = data.error || '회원가입에 실패했습니다.';
                     successMessage.textContent = '';
+                    console.error('회원가입 실패:', data.error);
                 }
             } catch (error) {
                 console.error('회원가입 중 오류 발생:', error);
-                errorMessage.textContent = '회원가입 중 오류가 발생했습니다.';
+                errorMessage.textContent = '회원가입 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
                 successMessage.textContent = '';
             }
         });

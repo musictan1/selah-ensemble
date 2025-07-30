@@ -389,23 +389,49 @@ def load_users():
         return []
 
 def save_users(users):
+    temp_file = None
     try:
+        print(f"사용자 데이터 저장 시작 - 사용자 수: {len(users)}")
+        
         # 디렉토리가 없으면 생성
         os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
+        
         # 백업: 기존 파일이 있으면 변경 전 백업본 생성
         if os.path.exists(USERS_FILE):
             backup_path = USERS_FILE + '.bak.' + datetime.now().strftime('%Y%m%d%H%M%S')
             shutil.copy2(USERS_FILE, backup_path)
+            print(f"백업 파일 생성: {backup_path}")
+        
         # 임시 파일에 먼저 저장
         temp_file = USERS_FILE + '.tmp'
         with open(temp_file, 'w', encoding='utf-8') as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
+        
+        # 임시 파일 유효성 검사
+        if not os.path.exists(temp_file) or os.path.getsize(temp_file) == 0:
+            raise Exception("임시 파일 생성 실패 또는 파일 크기가 0")
+        
+        print(f"임시 파일 저장 완료: {temp_file} (크기: {os.path.getsize(temp_file)} 바이트)")
+        
         # 임시 파일을 실제 파일로 이동 (원자적 연산)
         os.replace(temp_file, USERS_FILE)
+        
+        # 최종 파일 확인
+        if os.path.exists(USERS_FILE):
+            final_size = os.path.getsize(USERS_FILE)
+            print(f"사용자 데이터 저장 완료: {USERS_FILE} (크기: {final_size} 바이트)")
+        else:
+            raise Exception("최종 파일이 존재하지 않음")
+            
     except Exception as e:
         print(f"사용자 데이터 저장 중 오류 발생: {e}")
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        # 임시 파일 정리
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.remove(temp_file)
+                print(f"임시 파일 정리 완료: {temp_file}")
+            except:
+                pass
         raise
 
 def load_posts():
@@ -1506,26 +1532,50 @@ def update_post(post_id):
 @app.route('/api/register', methods=['POST'])
 def register():
     try:
+        print(f"회원가입 요청 수신 - Content-Type: {request.content_type}")
+        print(f"요청 데이터: {request.get_data()}")
+        
+        # 다양한 형식의 요청 데이터 처리
         if request.is_json:
             data = request.get_json()
+            print(f"JSON 데이터: {data}")
         else:
             data = request.form
-        username = data.get('username')
-        password = data.get('password')
-        name = data.get('name')
-        email = data.get('email')
-        phone = data.get('phone')
+            print(f"Form 데이터: {dict(data)}")
+        
+        # 데이터 추출 및 검증
+        username = data.get('username', '').strip()
+        password = data.get('password', '').strip()
+        name = data.get('name', '').strip()
+        email = data.get('email', '').strip()
+        phone = data.get('phone', '').strip()
+        
+        print(f"추출된 데이터 - username: {username}, name: {name}, email: {email}, phone: {phone}")
+        
+        # 필수 필드 검증
         if not all([username, password, name, email, phone]):
-            return jsonify({'error': '모든 필드를 입력해주세요.'}), 400
+            missing_fields = []
+            if not username: missing_fields.append('아이디')
+            if not password: missing_fields.append('비밀번호')
+            if not name: missing_fields.append('이름')
+            if not email: missing_fields.append('이메일')
+            if not phone: missing_fields.append('전화번호')
+            return jsonify({'error': f'다음 필드를 입력해주세요: {", ".join(missing_fields)}'}), 400
+        
+        # 사용자 데이터 로드
         users = load_users()
+        print(f"현재 사용자 수: {len(users)}")
+        
         # 아이디 중복 확인
         if any(u['username'] == username for u in users):
             return jsonify({'error': '이미 사용 중인 아이디입니다.'}), 400
+        
         # 새 사용자 ID 생성
         new_id = 1
         if users:
             new_id = max(u['id'] for u in users) + 1
-        # 새 사용자 추가
+        
+        # 새 사용자 객체 생성
         new_user = {
             'id': new_id,
             'username': username,
@@ -1536,13 +1586,44 @@ def register():
             'role': 'new',  # 기본 권한은 신입회원
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+        
+        print(f"새 사용자 정보: {new_user}")
+        
+        # 사용자 목록에 추가
         users.append(new_user)
-        save_users(users)
-        log_user_action('register', new_user)
-        return jsonify({'success': True, 'message': '회원가입이 완료되었습니다.'})
+        
+        # 사용자 데이터 저장
+        try:
+            save_users(users)
+            print(f"사용자 데이터 저장 완료 - 총 사용자 수: {len(users)}")
+        except Exception as save_error:
+            print(f"사용자 데이터 저장 실패: {save_error}")
+            return jsonify({'error': '사용자 정보 저장에 실패했습니다.'}), 500
+        
+        # 로그 기록
+        try:
+            log_user_action('register', new_user)
+            print(f"사용자 액션 로그 기록 완료")
+        except Exception as log_error:
+            print(f"로그 기록 실패: {log_error}")
+            # 로그 실패는 치명적이지 않으므로 계속 진행
+        
+        # 성공 응답
+        response_data = {
+            'success': True, 
+            'message': '회원가입이 완료되었습니다.',
+            'user_id': new_id,
+            'username': username
+        }
+        
+        print(f"회원가입 성공 응답: {response_data}")
+        return jsonify(response_data)
+        
     except Exception as e:
-        print(f"회원가입 중 오류 발생: {e}")
-        return jsonify({'error': str(e)}), 500
+        print(f"회원가입 중 예상치 못한 오류 발생: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'회원가입 중 오류가 발생했습니다: {str(e)}'}), 500
 
 @app.route('/api/check-username', methods=['POST'])
 def check_username():

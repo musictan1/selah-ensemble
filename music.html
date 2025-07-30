@@ -302,30 +302,48 @@
         // 사용자 인증 확인 함수
         async function checkAuth() {
             try {
+                console.log('checkAuth 함수 시작');
                 const response = await fetch('/api/check-auth');
+                console.log('서버 응답 상태:', response.status);
+                
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('서버 응답 데이터:', data);
+                    
                     if (data.authenticated || data.is_authenticated) {
                         currentUser = data.user;
                         isAdmin = currentUser.role === 'admin';
                         console.log("로그인 상태: 관리자 권한 =", isAdmin);
+                        console.log("현재 사용자 정보:", currentUser);
                         
                         // 사용자 권한에 따라 다운로드 버튼 표시 여부 설정
                         applyDownloadPermissions();
+                        
+                        // 업로드 폼 표시 여부 설정
+                        updateUploadForms();
                     } else {
                         currentUser = null;
                         isAdmin = false;
                         console.log("로그인되지 않은 상태");
+                        
+                        // 업로드 폼 숨김
+                        updateUploadForms();
                     }
                 } else {
                     currentUser = null;
                     isAdmin = false;
                     console.log("인증 확인 실패");
+                    
+                    // 업로드 폼 숨김
+                    updateUploadForms();
                 }
             } catch (error) {
                 console.error('인증 확인 중 오류 발생:', error);
                 currentUser = null;
                 isAdmin = false;
+                
+                // 업로드 폼 숨김
+                updateUploadForms();
             }
         }
 
@@ -1278,11 +1296,14 @@
         // 업로드 폼 표시 여부 설정 - 관리자만 표시
         function updateUploadForms() {
             const uploadForms = document.querySelectorAll('.upload-form');
+            console.log('updateUploadForms 호출됨 - isAdmin:', isAdmin, 'currentUser:', currentUser);
             uploadForms.forEach(form => {
                 if (isAdmin) {
                     form.style.display = 'block';
+                    console.log('업로드 폼 표시됨 (관리자 권한)');
                 } else {
                     form.style.display = 'none';
+                    console.log('업로드 폼 숨김됨 (관리자 권한 없음)');
                 }
             });
         }
