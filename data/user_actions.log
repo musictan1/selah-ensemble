@@ -1,3 +1,5 @@
 2025-05-18T14:34:01.467138 | register | {'id': 6, 'username': 'addd', 'password': 'midi6150', 'name': '저리가', 'email': 'wjflrk@naver.com', 'phone': '010-3434-3321', 'role': 'new', 'created_at': '2025-05-18 14:34:01'}
 2025-05-18T14:34:55.108341 | delete | {'id': 5, 'username': 'ass', 'password': 'midi6150', 'name': '양이래', 'email': 'diddl@naver.com', 'phone': '010-5566-1123', 'role': 'new', 'created_at': '2025-05-18 14:10:33'}
 2025-05-18T14:34:58.927726 | delete | {'id': 6, 'username': 'addd', 'password': 'midi6150', 'name': '저리가', 'email': 'wjflrk@naver.com', 'phone': '010-3434-3321', 'role': 'new', 'created_at': '2025-05-18 14:34:01'}
+2025-08-03T14:54:36.881321 | register | {'id': 5, 'username': 'goldgirl0220', 'password': '12345678', 'name': '조수현', 'email': 'goldgirl0220@daum.net', 'phone': '010-5357-1176', 'role': 'new', 'created_at': '2025-08-03 14:54:36'}
+2025-08-03T14:55:20.147214 | update_role | {'id': 5, 'username': 'goldgirl0220', 'old_role': 'new', 'new_role': 'special'}

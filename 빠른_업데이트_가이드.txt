@@ -1,37 +1,45 @@
-📋 셀라앙상블 찬양단 - 빠른 업데이트 가이드
+📋 셀라앙상블 찬양단 - 빠른 업데이트 가이드 (오늘 방식)
 
-🎯 현재 수정된 파일: music.html (음악 업로드 기능)
+🎯 현재 설정:
+- 서비스: Render.com
+- URL: https://selah-ensemble.onrender.com
+- 자동 배포: 활성화됨
 
-🚀 서버 업데이트 방법:
+🚀 업데이트 방법 (오늘 방식):
 
-1️⃣ FTP 업로드 (가장 일반적)
-   - FileZilla 다운로드: https://filezilla-project.org/
-   - 서버 정보 입력 (호스팅 제공업체에서 받은 정보)
-   - music.html 파일 업로드
-   - 서버 재시작
+1️⃣ 코드 수정
+   - 로컬에서 파일 수정 (music.html, app.py 등)
+   - python app.py로 로컬 테스트
 
-2️⃣ 웹 호스팅 제어판
-   - 호스팅 제어판 로그인
-   - 파일 관리자 → music.html 업로드
-   - 서비스 재시작
+2️⃣ GitHub 업로드
+   - github_deploy.bat 실행
+   - 커밋 메시지 입력 (또는 Enter)
+   - 자동으로 GitHub 푸시
 
-3️⃣ 로컬 테스트
-   - deploy.bat 실행
-   - 또는: taskkill /f /im python.exe && python app.py
+3️⃣ Render.com 배포 확인
+   - https://render.com 접속
+   - selah-ensemble 프로젝트 클릭
+   - "Deploy live" 상태 확인 (초록색 체크마크)
 
-✅ 업데이트 후 확인사항:
-   - 웹사이트 접속: http://localhost:5000
-   - 관리자 계정으로 로그인
-   - 음악 페이지에서 업로드 기능 확인
+4️⃣ 웹사이트 확인
+   - https://selah-ensemble.onrender.com 접속
+   - 업데이트된 기능 테스트
+   - 모바일에서도 확인
+
+✅ 성공 확인:
+- Render.com에서 "Deploy live" 상태
+- 웹사이트에서 기능 정상 작동
+- 모바일에서도 정상 작동
 
 ⚠️ 주의사항:
-   - 업데이트 전 백업 필수
-   - data/ 폴더는 보존
-   - 브라우저 캐시 삭제
+- 무료 인스턴스는 비활성 시 스핀다운됨
+- 첫 접속 시 50초 대기 필요
+- 로컬에서 먼저 테스트 필수
 
 📞 문제 발생시:
-   - 호스팅 제공업체 고객센터
-   - 서버 관리자 연락
+- Render.com 대시보드에서 로그 확인
+- 로컬에서 python app.py로 테스트
+- GitHub 저장소에서 커밋 히스토리 확인
 
 ---
-자세한 내용은 '서버_업데이트_매뉴얼.md' 참조 
+자세한 내용은 'Render_업데이트_매뉴얼.md' 참조 

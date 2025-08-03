@@ -38,15 +38,5 @@
     "phone": "010-8021-1250",
     "role": "special",
     "created_at": "2025-05-14 07:33:07"
-  },
-  {
-    "id": 5,
-    "username": "goldgirl0220",
-    "password": "12345678",
-    "name": "조수현",
-    "email": "goldgirl0220@daum.net",
-    "phone": "010-5357-1176",
-    "role": "special",
-    "created_at": "2025-08-03 14:54:36"
   }
 ]
