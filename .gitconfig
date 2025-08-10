@@ -1,0 +1,9 @@
+[core]
+    pager = cat
+    quotepath = false
+[gui]
+    pager = cat
+[init]
+    defaultBranch = master
+[help]
+    pager = cat
