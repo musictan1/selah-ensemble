@@ -13,16 +13,15 @@ echo 2. Staging changes...
 git add .
 
 echo.
-echo 3. Enter commit message:
-set /p commit_msg="Enter commit message (default: update): "
-if "%commit_msg%"=="" set commit_msg=update
+echo 3. Creating commit with timestamp...
+for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
+set "YY=%dt:~2,2%" & set "YYYY=%dt:~0,4%" & set "MM=%dt:~4,2%" & set "DD=%dt:~6,2%"
+set "HH=%dt:~8,2%" & set "Min=%dt:~10,2%" & set "Sec=%dt:~12,2%"
+set "datestamp=%YYYY%-%MM%-%DD% %HH%:%Min%:%Sec%"
+git commit -m "Auto update: %datestamp%"
 
 echo.
-echo 4. Creating commit...
-git commit -m "%commit_msg%"
-
-echo.
-echo 5. Pushing to GitHub...
+echo 4. Pushing to GitHub...
 git push origin master
 
 echo.
@@ -35,4 +34,5 @@ echo 1. Check GitHub repository: https://github.com/musictan1/selah-ensemble
 echo 2. Verify auto-deploy on Netlify/Vercel/Railway
 echo 3. Test website access
 echo.
-pause 
+echo Press any key to exit...
+pause >nul 
