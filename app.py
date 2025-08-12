@@ -980,6 +980,11 @@ def delete_file(category, filename):
             modified_category = 'music/' + category
             file_path = os.path.join(UPLOAD_FOLDER, modified_category, filename)
             print(f"수정된 삭제 파일 경로: {file_path}")
+        elif len(category_parts) == 2 and category_parts[0] == 'scores' and category_parts[1] == 'default':
+            # scores/default 경로 처리
+            file_path = os.path.join(UPLOAD_FOLDER, 'scores', 'default', filename)
+            print(f"악보 default 폴더 삭제 파일 경로: {file_path}")
+            print(f"파일 존재 여부: {os.path.exists(file_path)}")
         else:
             file_path = os.path.join(UPLOAD_FOLDER, category, filename)
         
@@ -1004,6 +1009,11 @@ def delete_file(category, filename):
         elif len(category_parts) == 2 and category_parts[0] == 'music' and category_parts[1] in ['ai', 'mr', 'live']:
             if filename in data['music'][category_parts[1]]:
                 data['music'][category_parts[1]].remove(filename)
+        elif len(category_parts) == 2 and category_parts[0] == 'scores' and category_parts[1] == 'default':
+            # scores/default 경로의 파일 삭제 시 데이터에서도 제거
+            if filename in data['scores']:
+                data['scores'].remove(filename)
+                print(f"악보 데이터에서 '{filename}' 제거됨")
         elif category_parts[0] in ['scores', 'videos']:
             if filename in data[category_parts[0]]:
                 data[category_parts[0]].remove(filename)

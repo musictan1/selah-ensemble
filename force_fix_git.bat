@@ -25,3 +25,4 @@ echo Git pager should be completely disabled now!
 echo Test with: git status
 echo.
 pause
+

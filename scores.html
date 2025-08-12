@@ -559,26 +559,33 @@
         // 파일 삭제 함수
         function deleteFile(category, filename) {
             if (confirm(`"${filename}" 파일을 삭제하시겠습니까?`)) {
-                // 파일이 기본 디렉토리에 있는지 하위 디렉토리에 있는지 확인
-                fetch(`uploads/${category}/${encodeURIComponent(filename)}`, { method: 'HEAD' })
-                    .then(response => {
-                        if (response.ok) {
-                            // 기본 디렉토리에 있는 경우
-                            performDelete(category, filename);
-                        } else {
-                            // 하위 디렉토리에 있는 경우
+                // 악보 파일은 대부분 default 폴더에 있으므로 직접 default 경로로 삭제 시도
+                if (category === 'scores') {
+                    performDelete(`${category}/default`, filename);
+                } else {
+                    // 다른 카테고리는 기존 로직 유지
+                    fetch(`uploads/${category}/${encodeURIComponent(filename)}`, { method: 'HEAD' })
+                        .then(response => {
+                            if (response.ok) {
+                                // 기본 디렉토리에 있는 경우
+                                performDelete(category, filename);
+                            } else {
+                                // 하위 디렉토리에 있는 경우
+                                performDelete(`${category}/default`, filename);
+                            }
+                        })
+                        .catch(() => {
+                            // 오류 발생 시 하위 디렉토리 시도
                             performDelete(`${category}/default`, filename);
-                        }
-                    })
-                    .catch(() => {
-                        // 오류 발생 시 하위 디렉토리 시도
-                        performDelete(`${category}/default`, filename);
-                    });
+                        });
+                }
             }
         }
         
         // 실제 삭제 수행 함수
         function performDelete(category, filename) {
+            console.log(`삭제 시도: 카테고리=${category}, 파일명=${filename}`);
+            
             fetch(`/delete/${category}/${encodeURIComponent(filename)}`, {
                 method: 'DELETE'
             })
