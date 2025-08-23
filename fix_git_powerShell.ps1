@@ -22,3 +22,6 @@ Write-Host "Test with: git status" -ForegroundColor Cyan
 Write-Host "Press any key to continue..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
+
+
+
