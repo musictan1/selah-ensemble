@@ -3,3 +3,4 @@
 2025-05-18T14:34:58.927726 | delete | {'id': 6, 'username': 'addd', 'password': 'midi6150', 'name': '저리가', 'email': 'wjflrk@naver.com', 'phone': '010-3434-3321', 'role': 'new', 'created_at': '2025-05-18 14:34:01'}
 2025-08-03T14:54:36.881321 | register | {'id': 5, 'username': 'goldgirl0220', 'password': '12345678', 'name': '조수현', 'email': 'goldgirl0220@daum.net', 'phone': '010-5357-1176', 'role': 'new', 'created_at': '2025-08-03 14:54:36'}
 2025-08-03T14:55:20.147214 | update_role | {'id': 5, 'username': 'goldgirl0220', 'old_role': 'new', 'new_role': 'special'}
+2025-08-24T07:06:09.354177 | register | {'id': 6, 'username': 'queensi', 'password': '12341234', 'name': '김민정', 'email': 'queensi@naver.com', 'phone': '010-2340-7531', 'role': 'new', 'created_at': '2025-08-24 07:06:09'}

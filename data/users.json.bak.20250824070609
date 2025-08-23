@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "username": "gofly4u",
+    "password": "Midi6150!!",
+    "name": "이은우",
+    "email": "gofly4u@gmail.com",
+    "phone": "010-6688-7177",
+    "role": "admin",
+    "created_at": "2025-05-05 12:48:47"
+  },
+  {
+    "id": 2,
+    "username": "rjansrh",
+    "password": "Midi6150!!",
+    "name": "이분신",
+    "email": "smixdown@naver.com",
+    "phone": "010-5853-7177",
+    "role": "special",
+    "created_at": "2025-05-08 16:01:50"
+  },
+  {
+    "id": 3,
+    "username": "smixdown2",
+    "password": "Midi6150!!",
+    "name": "이정보",
+    "email": "smixdown2@gmail.com",
+    "phone": "010-6688-7177",
+    "role": "regular",
+    "created_at": "2025-05-11 16:34:51"
+  },
+  {
+    "id": 4,
+    "username": "knight807s",
+    "password": "Midi6150!!",
+    "name": "송바위솔",
+    "email": "knight807s@naver.com",
+    "phone": "010-8021-1250",
+    "role": "special",
+    "created_at": "2025-05-14 07:33:07"
+  },
+  {
+    "id": 5,
+    "username": "goldgirl0220",
+    "password": "12345678",
+    "name": "조수현",
+    "email": "goldgirl0220@daum.net",
+    "phone": "010-5357-1176",
+    "role": "special",
+    "created_at": "2025-08-03 14:54:36"
+  }
+]
