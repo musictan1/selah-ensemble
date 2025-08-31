@@ -170,7 +170,9 @@
             }
             
             /* 모바일에서 미리듣기 버튼 특별 강제 표시 */
-            .preview-btn {
+            .preview-btn,
+            button.preview-btn,
+            .file-actions .preview-btn {
                 display: inline-block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
@@ -185,6 +187,7 @@
                 cursor: pointer !important;
                 min-width: 60px !important;
                 text-align: center !important;
+                margin: 2px !important;
             }
             
             /* 모바일에서 모든 버튼 타입 강제 표시 */
@@ -974,8 +977,8 @@
             const fileActions = document.createElement('div');
             fileActions.className = 'file-actions';
             
-            // 미리듣기 버튼 (모바일에서는 모든 사용자에게 표시, PC에서는 로그인한 사용자에게만)
-            if (isMobile() || currentUser) {
+            // 미리듣기 버튼 (모바일에서는 항상 표시)
+            if (isMobile()) {
                 const previewButton = document.createElement('button');
                 previewButton.className = 'preview-btn';
                 previewButton.textContent = '미리듣기';
@@ -984,13 +987,21 @@
                 };
                 
                 // 모바일에서는 강제로 표시
-                if (isMobile()) {
-                    previewButton.style.setProperty('display', 'inline-block', 'important');
-                    previewButton.style.setProperty('visibility', 'visible', 'important');
-                    previewButton.style.setProperty('opacity', '1', 'important');
-                    previewButton.style.setProperty('z-index', '999', 'important');
-                    previewButton.classList.add('mobile-visible');
-                }
+                previewButton.style.setProperty('display', 'inline-block', 'important');
+                previewButton.style.setProperty('visibility', 'visible', 'important');
+                previewButton.style.setProperty('opacity', '1', 'important');
+                previewButton.style.setProperty('z-index', '999', 'important');
+                previewButton.classList.add('mobile-visible');
+                
+                fileActions.appendChild(previewButton);
+            } else if (currentUser && currentUser.role) {
+                // PC에서는 로그인한 사용자에게만 표시
+                const previewButton = document.createElement('button');
+                previewButton.className = 'preview-btn';
+                previewButton.textContent = '미리듣기';
+                previewButton.onclick = function() {
+                    togglePreview(this);
+                };
                 
                 fileActions.appendChild(previewButton);
             }
@@ -1684,9 +1695,9 @@
             
             console.log('forceShowMobileButtons 함수 실행 시작');
             
-            // 모든 파일 액션 버튼 찾기
-            const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
-            console.log(`모바일 버튼 강제 표시: ${allButtons.length}개 버튼 발견`);
+                         // 모든 파일 액션 버튼 찾기 (미리듣기 버튼 포함)
+             const allButtons = document.querySelectorAll('.file-actions button, .file-actions a, .preview-btn, button.preview-btn');
+             console.log(`모바일 버튼 강제 표시: ${allButtons.length}개 버튼 발견`);
             
             if (allButtons.length === 0) {
                 console.log('버튼이 발견되지 않음 - 파일 목록이 아직 로드되지 않았을 수 있음');
