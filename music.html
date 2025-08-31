@@ -163,7 +163,38 @@
                 visibility: visible !important;
                 opacity: 1 !important;
                 position: relative !important;
-                z-index: 20 !important;
+                z-index: 999 !important;
+                max-width: none !important;
+                width: auto !important;
+                height: auto !important;
+            }
+            
+            /* 모바일에서 모든 버튼 타입 강제 표시 */
+            .file-actions button,
+            .file-actions a,
+            .file-item button,
+            .file-item a {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 999 !important;
+                max-width: none !important;
+                width: auto !important;
+                height: auto !important;
+            }
+            
+            /* 모바일에서 특정 클래스 버튼들 강제 표시 */
+            .preview-btn,
+            .rename-btn,
+            .edit-btn,
+            .delete-btn,
+            .download-btn {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 999 !important;
             }
             
             .upload-form {
@@ -874,8 +905,18 @@
                     }
                 });
                 
-                console.log("파일 목록 업데이트 완료");
-                console.groupEnd();
+                                 console.log("파일 목록 업데이트 완료");
+                 
+                 // 모바일에서 파일 목록 로드 완료 후 버튼 강제 표시
+                 if (isMobile()) {
+                     console.log('파일 목록 로드 완료 후 모바일 버튼 강제 표시 시작');
+                     setTimeout(() => {
+                         forceShowMobileButtons();
+                         console.log('파일 목록 로드 후 모바일 버튼 강제 표시 완료');
+                     }, 500);
+                 }
+                 
+                 console.groupEnd();
             })
             .catch(error => {
                 console.error('파일 목록 로드 중 오류:', error);
@@ -1014,19 +1055,24 @@
             item.appendChild(fileInfo);
             item.appendChild(audio);
             
-            // 모바일 환경에서 버튼 표시 강제 적용
-            if (isMobile()) {
-                setTimeout(() => {
-                    const buttons = item.querySelectorAll('button, a');
-                    buttons.forEach(button => {
-                        if (button.style.display !== 'none') {
-                            button.style.display = 'inline-block';
-                            button.style.visibility = 'visible';
-                            button.style.opacity = '1';
-                        }
-                    });
-                }, 100);
-            }
+                         // 모바일 환경에서 버튼 표시 강제 적용
+             if (isMobile()) {
+                 console.log('모바일에서 파일 항목 생성 - 버튼 강제 표시 적용');
+                 const buttons = item.querySelectorAll('button, a');
+                 buttons.forEach((button, index) => {
+                     // 모든 스타일 속성을 강제로 설정
+                     button.style.setProperty('display', 'inline-block', 'important');
+                     button.style.setProperty('visibility', 'visible', 'important');
+                     button.style.setProperty('opacity', '1', 'important');
+                     button.style.setProperty('position', 'relative', 'important');
+                     button.style.setProperty('z-index', '25', 'important');
+                     
+                     // CSS 클래스 추가
+                     button.classList.add('mobile-visible');
+                     
+                     console.log(`모바일 버튼 ${index + 1} 강제 표시:`, button.textContent);
+                 });
+             }
             
             return item;
         }
@@ -1581,14 +1627,26 @@
                 // 지연 적용 (파일 목록이 로드된 후)
                 setTimeout(() => {
                     forceShowMobileButtons();
-                    console.log('지연 적용 완료');
+                    console.log('1초 후 지연 적용 완료');
                 }, 1000);
                 
                 // 추가 지연 적용
                 setTimeout(() => {
                     forceShowMobileButtons();
-                    console.log('추가 지연 적용 완료');
+                    console.log('2초 후 지연 적용 완료');
                 }, 2000);
+                
+                // 더 긴 지연 적용
+                setTimeout(() => {
+                    forceShowMobileButtons();
+                    console.log('3초 후 지연 적용 완료');
+                }, 3000);
+                
+                // 최종 확인
+                setTimeout(() => {
+                    forceShowMobileButtons();
+                    console.log('5초 후 최종 확인 완료');
+                }, 5000);
             }
         });
         
@@ -1596,22 +1654,61 @@
         function forceShowMobileButtons() {
             if (!isMobile()) return;
             
+            console.log('forceShowMobileButtons 함수 실행 시작');
+            
+            // 모든 파일 액션 버튼 찾기
             const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
             console.log(`모바일 버튼 강제 표시: ${allButtons.length}개 버튼 발견`);
             
+            if (allButtons.length === 0) {
+                console.log('버튼이 발견되지 않음 - 파일 목록이 아직 로드되지 않았을 수 있음');
+                return;
+            }
+            
             allButtons.forEach((button, index) => {
-                // 모든 스타일 속성 강제 설정
+                // 모든 스타일 속성을 최고 우선순위로 강제 설정
                 button.style.setProperty('display', 'inline-block', 'important');
                 button.style.setProperty('visibility', 'visible', 'important');
                 button.style.setProperty('opacity', '1', 'important');
                 button.style.setProperty('position', 'relative', 'important');
-                button.style.setProperty('z-index', '20', 'important');
+                button.style.setProperty('z-index', '999', 'important');
+                button.style.setProperty('max-width', 'none', 'important');
+                button.style.setProperty('width', 'auto', 'important');
+                button.style.setProperty('height', 'auto', 'important');
                 
                 // CSS 클래스 추가
                 button.classList.add('mobile-visible');
                 
-                console.log(`버튼 ${index + 1} 강제 표시 적용:`, button.textContent);
+                // 인라인 스타일도 직접 설정
+                button.style.display = 'inline-block';
+                button.style.visibility = 'visible';
+                button.style.opacity = '1';
+                button.style.position = 'relative';
+                button.style.zIndex = '999';
+                
+                console.log(`버튼 ${index + 1} 강제 표시 적용 완료:`, button.textContent, button.style.display);
             });
+            
+            // 추가로 모든 파일 항목의 버튼들도 강제 표시
+            const fileItems = document.querySelectorAll('.file-item');
+            fileItems.forEach((item, itemIndex) => {
+                const itemButtons = item.querySelectorAll('button, a');
+                itemButtons.forEach((button, buttonIndex) => {
+                    button.style.setProperty('display', 'inline-block', 'important');
+                    button.style.setProperty('visibility', 'visible', 'important');
+                    button.style.setProperty('opacity', '1', 'important');
+                    button.style.setProperty('z-index', '999', 'important');
+                    
+                    button.style.display = 'inline-block';
+                    button.style.visibility = 'visible';
+                    button.style.opacity = '1';
+                    button.style.zIndex = '999';
+                    
+                    console.log(`파일 항목 ${itemIndex + 1} 버튼 ${buttonIndex + 1} 강제 표시:`, button.textContent);
+                });
+            });
+            
+            console.log('forceShowMobileButtons 함수 실행 완료');
         }
         
         // 화면 크기 변경 시 모바일 버튼 표시 상태 재확인
