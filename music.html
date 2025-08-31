@@ -173,7 +173,8 @@
             .preview-btn,
             button.preview-btn,
             .file-actions .preview-btn,
-            .file-item .preview-btn {
+            .file-item .preview-btn,
+            .file-actions button.preview-btn {
                 display: inline-block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
@@ -1700,7 +1701,7 @@
             console.log('forceShowMobileButtons 함수 실행 시작');
             
                          // 모든 파일 액션 버튼 찾기 (미리듣기 버튼 포함)
-             const allButtons = document.querySelectorAll('.file-actions button, .file-actions a, .preview-btn, button.preview-btn, .file-item .preview-btn');
+             const allButtons = document.querySelectorAll('.file-actions button, .file-actions a, .preview-btn, button.preview-btn, .file-item .preview-btn, .file-actions button.preview-btn');
              console.log(`모바일 버튼 강제 표시: ${allButtons.length}개 버튼 발견`);
             
             if (allButtons.length === 0) {
