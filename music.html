@@ -172,7 +172,8 @@
             /* 모바일에서 미리듣기 버튼 특별 강제 표시 */
             .preview-btn,
             button.preview-btn,
-            .file-actions .preview-btn {
+            .file-actions .preview-btn,
+            .file-item .preview-btn {
                 display: inline-block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
@@ -188,6 +189,9 @@
                 min-width: 60px !important;
                 text-align: center !important;
                 margin: 2px !important;
+                max-width: none !important;
+                width: auto !important;
+                height: auto !important;
             }
             
             /* 모바일에서 모든 버튼 타입 강제 표시 */
@@ -977,7 +981,7 @@
             const fileActions = document.createElement('div');
             fileActions.className = 'file-actions';
             
-            // 미리듣기 버튼 (모바일에서는 항상 표시)
+            // 미리듣기 버튼 (모바일에서는 무조건 표시)
             if (isMobile()) {
                 const previewButton = document.createElement('button');
                 previewButton.className = 'preview-btn';
@@ -1696,7 +1700,7 @@
             console.log('forceShowMobileButtons 함수 실행 시작');
             
                          // 모든 파일 액션 버튼 찾기 (미리듣기 버튼 포함)
-             const allButtons = document.querySelectorAll('.file-actions button, .file-actions a, .preview-btn, button.preview-btn');
+             const allButtons = document.querySelectorAll('.file-actions button, .file-actions a, .preview-btn, button.preview-btn, .file-item .preview-btn');
              console.log(`모바일 버튼 강제 표시: ${allButtons.length}개 버튼 발견`);
             
             if (allButtons.length === 0) {
