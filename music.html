@@ -169,6 +169,24 @@
                 height: auto !important;
             }
             
+            /* 모바일에서 미리듣기 버튼 특별 강제 표시 */
+            .preview-btn {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 1000 !important;
+                background-color: #28a745 !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 4px !important;
+                padding: 8px 12px !important;
+                font-size: 13px !important;
+                cursor: pointer !important;
+                min-width: 60px !important;
+                text-align: center !important;
+            }
+            
             /* 모바일에서 모든 버튼 타입 강제 표시 */
             .file-actions button,
             .file-actions a,
@@ -956,14 +974,24 @@
             const fileActions = document.createElement('div');
             fileActions.className = 'file-actions';
             
-            // 미리듣기 버튼 (로그인한 사용자에게만 표시)
-            if (currentUser) {
+            // 미리듣기 버튼 (모바일에서는 모든 사용자에게 표시, PC에서는 로그인한 사용자에게만)
+            if (isMobile() || currentUser) {
                 const previewButton = document.createElement('button');
                 previewButton.className = 'preview-btn';
                 previewButton.textContent = '미리듣기';
                 previewButton.onclick = function() {
                     togglePreview(this);
                 };
+                
+                // 모바일에서는 강제로 표시
+                if (isMobile()) {
+                    previewButton.style.setProperty('display', 'inline-block', 'important');
+                    previewButton.style.setProperty('visibility', 'visible', 'important');
+                    previewButton.style.setProperty('opacity', '1', 'important');
+                    previewButton.style.setProperty('z-index', '999', 'important');
+                    previewButton.classList.add('mobile-visible');
+                }
+                
                 fileActions.appendChild(previewButton);
             }
             
@@ -1665,29 +1693,54 @@
                 return;
             }
             
-            allButtons.forEach((button, index) => {
-                // 모든 스타일 속성을 최고 우선순위로 강제 설정
-                button.style.setProperty('display', 'inline-block', 'important');
-                button.style.setProperty('visibility', 'visible', 'important');
-                button.style.setProperty('opacity', '1', 'important');
-                button.style.setProperty('position', 'relative', 'important');
-                button.style.setProperty('z-index', '999', 'important');
-                button.style.setProperty('max-width', 'none', 'important');
-                button.style.setProperty('width', 'auto', 'important');
-                button.style.setProperty('height', 'auto', 'important');
-                
-                // CSS 클래스 추가
-                button.classList.add('mobile-visible');
-                
-                // 인라인 스타일도 직접 설정
-                button.style.display = 'inline-block';
-                button.style.visibility = 'visible';
-                button.style.opacity = '1';
-                button.style.position = 'relative';
-                button.style.zIndex = '999';
-                
-                console.log(`버튼 ${index + 1} 강제 표시 적용 완료:`, button.textContent, button.style.display);
-            });
+                         allButtons.forEach((button, index) => {
+                 // 모든 스타일 속성을 최고 우선순위로 강제 설정
+                 button.style.setProperty('display', 'inline-block', 'important');
+                 button.style.setProperty('visibility', 'visible', 'important');
+                 button.style.setProperty('opacity', '1', 'important');
+                 button.style.setProperty('position', 'relative', 'important');
+                 button.style.setProperty('z-index', '999', 'important');
+                 button.style.setProperty('max-width', 'none', 'important');
+                 button.style.setProperty('width', 'auto', 'important');
+                 button.style.setProperty('height', 'auto', 'important');
+                 
+                 // 미리듣기 버튼은 특별히 더 높은 우선순위 적용
+                 if (button.classList.contains('preview-btn')) {
+                     button.style.setProperty('z-index', '1000', 'important');
+                     button.style.setProperty('background-color', '#28a745', 'important');
+                     button.style.setProperty('color', 'white', 'important');
+                     button.style.setProperty('border', 'none', 'important');
+                     button.style.setProperty('border-radius', '4px', 'important');
+                     button.style.setProperty('padding', '8px 12px', 'important');
+                     button.style.setProperty('font-size', '13px', 'important');
+                     button.style.setProperty('cursor', 'pointer', 'important');
+                     button.style.setProperty('min-width', '60px', 'important');
+                     button.style.setProperty('text-align', 'center', 'important');
+                     
+                     button.style.zIndex = '1000';
+                     button.style.backgroundColor = '#28a745';
+                     button.style.color = 'white';
+                     button.style.border = 'none';
+                     button.style.borderRadius = '4px';
+                     button.style.padding = '8px 12px';
+                     button.style.fontSize = '13px';
+                     button.style.cursor = 'pointer';
+                     button.style.minWidth = '60px';
+                     button.style.textAlign = 'center';
+                 }
+                 
+                 // CSS 클래스 추가
+                 button.classList.add('mobile-visible');
+                 
+                 // 인라인 스타일도 직접 설정
+                 button.style.display = 'inline-block';
+                 button.style.visibility = 'visible';
+                 button.style.opacity = '1';
+                 button.style.position = 'relative';
+                 button.style.zIndex = '999';
+                 
+                 console.log(`버튼 ${index + 1} 강제 표시 적용 완료:`, button.textContent, button.style.display);
+             });
             
             // 추가로 모든 파일 항목의 버튼들도 강제 표시
             const fileItems = document.querySelectorAll('.file-item');
