@@ -130,6 +130,18 @@
                 display: inline-block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
+                position: relative !important;
+                z-index: 10 !important;
+            }
+            
+            /* 모바일에서 모든 버튼 강제 표시 */
+            .file-actions button,
+            .file-actions a {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 10 !important;
             }
             
             .upload-form {
@@ -455,6 +467,21 @@
                     button.style.display = 'none';
                 });
                 console.log('일반회원/신입회원 권한 적용: 다운로드 버튼 숨김');
+            }
+            
+            // 모바일에서는 모든 버튼 강제 표시 (디버깅용)
+            if (isMobile()) {
+                setTimeout(() => {
+                    const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
+                    allButtons.forEach(button => {
+                        if (button.style.display !== 'none') {
+                            button.style.display = 'inline-block';
+                            button.style.visibility = 'visible';
+                            button.style.opacity = '1';
+                        }
+                    });
+                    console.log('모바일 버튼 강제 표시 적용됨');
+                }, 500);
             }
         }
         
@@ -878,7 +905,8 @@
             renameButton.onclick = function() {
                 simpleRenameFile(category, file);
             };
-            if (!isAdmin) {
+            // 모바일에서는 모든 버튼 표시 (디버깅용)
+            if (!isAdmin && !isMobile()) {
                 renameButton.style.display = 'none';
             }
             
@@ -889,7 +917,8 @@
             editButton.onclick = function() {
                 editFile(category, file);
             };
-            if (!isAdmin) {
+            // 모바일에서는 모든 버튼 표시 (디버깅용)
+            if (!isAdmin && !isMobile()) {
                 editButton.style.display = 'none';
             }
             
@@ -900,7 +929,8 @@
             deleteButton.onclick = function() {
                 deleteFile(category, file);
             };
-            if (!isAdmin) {
+            // 모바일에서는 모든 버튼 표시 (디버깅용)
+            if (!isAdmin && !isMobile()) {
                 deleteButton.style.display = 'none';
             }
             
@@ -916,8 +946,8 @@
             downloadButton.href = filePath;
             downloadButton.download = file;
             
-            // 일반회원과 신입회원은 다운로드 버튼 숨김
-            if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new')) {
+            // 일반회원과 신입회원은 다운로드 버튼 숨김 (모바일에서는 우회)
+            if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new') && !isMobile()) {
                 downloadButton.style.display = 'none';
             }
             
@@ -1512,6 +1542,21 @@
         window.addEventListener('load', function() {
             // 파일 로드는 이미 checkAuth에서 호출됨
             updateUploadForms();
+            
+            // 모바일에서 버튼 표시 확인
+            if (isMobile()) {
+                setTimeout(() => {
+                    const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
+                    allButtons.forEach(button => {
+                        if (button.style.display !== 'none') {
+                            button.style.display = 'inline-block';
+                            button.style.visibility = 'visible';
+                            button.style.opacity = '1';
+                        }
+                    });
+                    console.log('페이지 로드 후 모바일 버튼 표시 확인 완료');
+                }, 1000);
+            }
         });
         
         // 화면 크기 변경 시 모바일 버튼 표시 상태 재확인
