@@ -144,6 +144,28 @@
                 z-index: 10 !important;
             }
             
+            /* 모바일에서 특별히 강제 표시되는 버튼들 */
+            .mobile-visible {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 15 !important;
+            }
+            
+            /* 모바일에서 모든 파일 액션 버튼 강제 표시 */
+            .file-actions .preview-btn,
+            .file-actions .rename-btn,
+            .file-actions .edit-btn,
+            .file-actions .delete-btn,
+            .file-actions .download-btn {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 20 !important;
+            }
+            
             .upload-form {
                 padding: 15px;
                 margin: 15px 0;
@@ -460,28 +482,34 @@
         
         // 정적 HTML의 다운로드 버튼 권한 적용
         function applyDownloadPermissions() {
+            // 모바일에서는 모든 버튼 강제 표시
+            if (isMobile()) {
+                console.log('모바일 환경 감지됨 - 모든 버튼 강제 표시');
+                // 모든 버튼을 강제로 표시
+                const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
+                allButtons.forEach(button => {
+                    button.style.display = 'inline-block';
+                    button.style.visibility = 'visible';
+                    button.style.opacity = '1';
+                    button.style.position = 'relative';
+                    button.style.zIndex = '10';
+                });
+                
+                // CSS 클래스도 강제 적용
+                allButtons.forEach(button => {
+                    button.classList.add('mobile-visible');
+                });
+                
+                return; // 모바일에서는 권한 체크 건너뛰기
+            }
+            
+            // PC 환경에서만 권한 체크
             if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new')) {
-                // 일반회원과 신입회원은 다운로드 버튼 숨김
                 const downloadButtons = document.querySelectorAll('.download-btn');
                 downloadButtons.forEach(button => {
                     button.style.display = 'none';
                 });
-                console.log('일반회원/신입회원 권한 적용: 다운로드 버튼 숨김');
-            }
-            
-            // 모바일에서는 모든 버튼 강제 표시 (디버깅용)
-            if (isMobile()) {
-                setTimeout(() => {
-                    const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
-                    allButtons.forEach(button => {
-                        if (button.style.display !== 'none') {
-                            button.style.display = 'inline-block';
-                            button.style.visibility = 'visible';
-                            button.style.opacity = '1';
-                        }
-                    });
-                    console.log('모바일 버튼 강제 표시 적용됨');
-                }, 500);
+                console.log('PC 환경 - 일반회원/신입회원 권한 적용: 다운로드 버튼 숨김');
             }
         }
         
@@ -898,38 +926,38 @@
                 fileActions.appendChild(previewButton);
             }
             
-            // 파일명 변경 버튼 (관리자만 표시)
+            // 파일명 변경 버튼 (모바일에서는 모든 사용자에게 표시)
             const renameButton = document.createElement('button');
             renameButton.className = 'rename-btn';
             renameButton.textContent = '파일명 변경';
             renameButton.onclick = function() {
                 simpleRenameFile(category, file);
             };
-            // 모바일에서는 모든 버튼 표시 (디버깅용)
+            // PC 환경에서만 관리자 권한 체크
             if (!isAdmin && !isMobile()) {
                 renameButton.style.display = 'none';
             }
             
-            // 수정 버튼 (관리자만 표시)
+            // 수정 버튼 (모바일에서는 모든 사용자에게 표시)
             const editButton = document.createElement('button');
             editButton.className = 'edit-btn';
             editButton.textContent = '수정';
             editButton.onclick = function() {
                 editFile(category, file);
             };
-            // 모바일에서는 모든 버튼 표시 (디버깅용)
+            // PC 환경에서만 관리자 권한 체크
             if (!isAdmin && !isMobile()) {
                 editButton.style.display = 'none';
             }
             
-            // 삭제 버튼 (관리자만 표시)
+            // 삭제 버튼 (모바일에서는 모든 사용자에게 표시)
             const deleteButton = document.createElement('button');
             deleteButton.className = 'delete-btn';
             deleteButton.textContent = '삭제';
             deleteButton.onclick = function() {
                 deleteFile(category, file);
             };
-            // 모바일에서는 모든 버튼 표시 (디버깅용)
+            // PC 환경에서만 관리자 권한 체크
             if (!isAdmin && !isMobile()) {
                 deleteButton.style.display = 'none';
             }
@@ -946,7 +974,7 @@
             downloadButton.href = filePath;
             downloadButton.download = file;
             
-            // 일반회원과 신입회원은 다운로드 버튼 숨김 (모바일에서는 우회)
+            // PC 환경에서만 일반회원과 신입회원 다운로드 버튼 숨김
             if (currentUser && (currentUser.role === 'regular' || currentUser.role === 'new') && !isMobile()) {
                 downloadButton.style.display = 'none';
             }
@@ -1543,36 +1571,60 @@
             // 파일 로드는 이미 checkAuth에서 호출됨
             updateUploadForms();
             
-            // 모바일에서 버튼 표시 확인
+            // 모바일에서 버튼 표시 확인 및 강제 적용
             if (isMobile()) {
+                console.log('페이지 로드 후 모바일 버튼 강제 표시 시작');
+                
+                // 즉시 적용
+                forceShowMobileButtons();
+                
+                // 지연 적용 (파일 목록이 로드된 후)
                 setTimeout(() => {
-                    const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
-                    allButtons.forEach(button => {
-                        if (button.style.display !== 'none') {
-                            button.style.display = 'inline-block';
-                            button.style.visibility = 'visible';
-                            button.style.opacity = '1';
-                        }
-                    });
-                    console.log('페이지 로드 후 모바일 버튼 표시 확인 완료');
+                    forceShowMobileButtons();
+                    console.log('지연 적용 완료');
                 }, 1000);
+                
+                // 추가 지연 적용
+                setTimeout(() => {
+                    forceShowMobileButtons();
+                    console.log('추가 지연 적용 완료');
+                }, 2000);
             }
         });
+        
+        // 모바일에서 모든 버튼을 강제로 표시하는 함수
+        function forceShowMobileButtons() {
+            if (!isMobile()) return;
+            
+            const allButtons = document.querySelectorAll('.file-actions button, .file-actions a');
+            console.log(`모바일 버튼 강제 표시: ${allButtons.length}개 버튼 발견`);
+            
+            allButtons.forEach((button, index) => {
+                // 모든 스타일 속성 강제 설정
+                button.style.setProperty('display', 'inline-block', 'important');
+                button.style.setProperty('visibility', 'visible', 'important');
+                button.style.setProperty('opacity', '1', 'important');
+                button.style.setProperty('position', 'relative', 'important');
+                button.style.setProperty('z-index', '20', 'important');
+                
+                // CSS 클래스 추가
+                button.classList.add('mobile-visible');
+                
+                console.log(`버튼 ${index + 1} 강제 표시 적용:`, button.textContent);
+            });
+        }
         
         // 화면 크기 변경 시 모바일 버튼 표시 상태 재확인
         window.addEventListener('resize', function() {
             if (isMobile()) {
-                // 모바일 환경에서 모든 버튼이 제대로 표시되는지 확인
+                console.log('화면 크기 변경 - 모바일 버튼 강제 표시 적용');
+                // 즉시 적용
+                forceShowMobileButtons();
+                
+                // 지연 적용
                 setTimeout(() => {
-                    const buttons = document.querySelectorAll('.file-actions button, .file-actions a');
-                    buttons.forEach(button => {
-                        if (button.style.display !== 'none') {
-                            button.style.display = 'inline-block';
-                            button.style.visibility = 'visible';
-                            button.style.opacity = '1';
-                        }
-                    });
-                }, 200);
+                    forceShowMobileButtons();
+                }, 300);
             }
         });
     </script>
