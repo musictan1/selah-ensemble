@@ -67,10 +67,43 @@
             opacity: 0;
             margin: 0;
             padding: 0;
+            display: none;
         }
         .category-content.expanded {
             max-height: none;
             opacity: 1;
+            display: block;
+        }
+        
+        /* 모바일 환경을 위한 추가 스타일 */
+        @media (max-width: 768px) {
+            .category-content.expanded {
+                max-height: none;
+                opacity: 1;
+                display: block;
+                overflow: visible;
+            }
+            
+            .music-category {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .music-category h3 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            
+            .file-actions {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .file-actions button,
+            .file-actions a {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
         }
         .file-list {
             margin: 20px 0;
@@ -1400,12 +1433,14 @@
                 // 펼치기
                 content.classList.remove('collapsed');
                 content.classList.add('expanded');
+                content.style.display = 'block';
                 toggle.className = 'fas fa-chevron-up';
                 toggle.parentElement.title = '접기';
             } else {
                 // 접기
                 content.classList.remove('expanded');
                 content.classList.add('collapsed');
+                content.style.display = 'none';
                 toggle.className = 'fas fa-chevron-down';
                 toggle.parentElement.title = '펼치기';
             }
