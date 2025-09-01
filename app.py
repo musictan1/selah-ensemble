@@ -1688,9 +1688,10 @@ def serve_upload(filename):
             user = next((u for u in users if u['id'] == session['user_id']), None)
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
-            # 특별회원, 관리자만 다운로드/미리듣기 허용
-            if user['role'] not in ['admin', 'special']:
-                return jsonify({'error': '특별회원 및 관리자만 음악 파일을 이용할 수 있습니다.'}), 403
+            
+            # 모든 로그인 사용자에게 미리듣기 허용 (AI, MR, Live 모두 동일하게)
+            # 다운로드 권한만 특별회원, 관리자로 제한
+            pass
         # scores 파일 요청 시 하위 default 폴더도 함께 찾기
         if len(path_parts) > 1 and path_parts[0] == 'scores':
             base_dir = os.path.join(UPLOAD_FOLDER, 'scores')
