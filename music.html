@@ -1068,7 +1068,7 @@
             downloadButton.textContent = '다운로드';
             
             // 인코딩된 파일 경로 - 원래 경로로 복구
-            const filePath = `uploads/music/${category}/${encodeURIComponent(file)}`;
+            const filePath = `/uploads/music/${category}/${encodeURIComponent(file)}`;
             console.log("생성된 파일 경로:", filePath);
             
             downloadButton.href = filePath;
