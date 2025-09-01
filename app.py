@@ -1690,8 +1690,8 @@ def serve_upload(filename):
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
             
             # 모든 로그인 사용자에게 미리듣기 허용 (AI, MR, Live 모두 동일하게)
-            # 다운로드 권한만 특별회원, 관리자로 제한
-            pass
+            # 권한 체크 없이 바로 파일 제공
+            print(f"음악 파일 미리듣기 허용: {filename} (사용자: {user.get('username', 'unknown')}, 역할: {user.get('role', 'unknown')})")
         # scores 파일 요청 시 하위 default 폴더도 함께 찾기
         if len(path_parts) > 1 and path_parts[0] == 'scores':
             base_dir = os.path.join(UPLOAD_FOLDER, 'scores')

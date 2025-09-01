@@ -630,12 +630,22 @@
             const audioSrc = sourceElement ? sourceElement.src : null;
             const allAudioPreviews = document.querySelectorAll('.audio-preview');
             
-            console.log('미리듣기 요청:', {
-                fileItem: fileItem,
-                audioFound: !!audioPreview,
-                audioSrc: audioSrc,
-                audioVisible: audioPreview ? audioPreview.style.display : 'N/A'
-            });
+            console.log('=== 미리듣기 요청 시작 ===');
+            console.log('버튼 클릭됨:', button.textContent);
+            console.log('파일 항목:', fileItem);
+            console.log('오디오 요소 찾음:', !!audioPreview);
+            console.log('오디오 소스:', audioSrc);
+            console.log('오디오 표시 상태:', audioPreview ? audioPreview.style.display : 'N/A');
+            console.log('현재 사용자:', currentUser);
+            console.log('모바일 환경:', isMobile());
+            console.log('========================');
+            
+            // 오디오 요소가 없으면 생성
+            if (!audioPreview) {
+                console.error('오디오 요소를 찾을 수 없습니다.');
+                alert('미리듣기 요소를 찾을 수 없습니다.');
+                return;
+            }
             
             // 다른 모든 미리듣기 중지
             allAudioPreviews.forEach(audio => {
@@ -648,12 +658,15 @@
             // 현재 미리듣기 토글
             if (audioPreview.style.display === 'none' || !audioPreview.style.display) {
                 audioPreview.style.display = 'block';
+                audioPreview.style.visibility = 'visible';
                 
                 // 오디오 로드 상태 확인 및 재생 시도
                 const playAudio = function() {
                     console.log('오디오 재생 시도');
                     audioPreview.play().then(() => {
                         console.log('오디오 재생 시작됨');
+                        button.textContent = '정지';
+                        button.style.background = '#dc3545';
                     }).catch(err => {
                         console.error('오디오 재생 실패:', err);
                         alert('오디오 재생에 실패했습니다. 파일을 확인해주세요.');
@@ -680,6 +693,8 @@
             } else {
                 audioPreview.style.display = 'none';
                 audioPreview.pause();
+                button.textContent = '미리듣기';
+                button.style.background = '#007bff';
             }
         }
 
@@ -982,34 +997,34 @@
             const fileActions = document.createElement('div');
             fileActions.className = 'file-actions';
             
-            // 미리듣기 버튼 (모바일에서는 무조건 표시)
+            // 미리듣기 버튼 (모바일에서는 무조건 표시, PC에서는 로그인한 사용자에게만)
+            const previewButton = document.createElement('button');
+            previewButton.className = 'preview-btn';
+            previewButton.textContent = '미리듣기';
+            previewButton.onclick = function() {
+                togglePreview(this);
+            };
+            
+            // 모바일에서는 무조건 표시, PC에서는 로그인한 사용자에게만
             if (isMobile()) {
-                const previewButton = document.createElement('button');
-                previewButton.className = 'preview-btn';
-                previewButton.textContent = '미리듣기';
-                previewButton.onclick = function() {
-                    togglePreview(this);
-                };
-                
                 // 모바일에서는 강제로 표시
                 previewButton.style.setProperty('display', 'inline-block', 'important');
                 previewButton.style.setProperty('visibility', 'visible', 'important');
                 previewButton.style.setProperty('opacity', '1', 'important');
                 previewButton.style.setProperty('z-index', '999', 'important');
                 previewButton.classList.add('mobile-visible');
-                
-                fileActions.appendChild(previewButton);
+                console.log('모바일 미리듣기 버튼 생성:', category, file);
             } else if (currentUser && currentUser.role) {
                 // PC에서는 로그인한 사용자에게만 표시
-                const previewButton = document.createElement('button');
-                previewButton.className = 'preview-btn';
-                previewButton.textContent = '미리듣기';
-                previewButton.onclick = function() {
-                    togglePreview(this);
-                };
-                
-                fileActions.appendChild(previewButton);
+                previewButton.style.display = 'inline-block';
+                console.log('PC 미리듣기 버튼 생성:', category, file);
+            } else {
+                // PC에서 로그인하지 않은 사용자에게는 숨김
+                previewButton.style.display = 'none';
+                console.log('PC 비로그인 사용자 - 미리듣기 버튼 숨김:', category, file);
             }
+            
+            fileActions.appendChild(previewButton);
             
             // 파일명 변경 버튼 (모바일에서는 모든 사용자에게 표시)
             const renameButton = document.createElement('button');

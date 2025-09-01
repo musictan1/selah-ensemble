@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Search Console 인증</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .verification-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .steps {
+            background: #fff;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .important {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Google Search Console 등록 가이드</h1>
+    
+    <div class="verification-box">
+        <h2>1단계: Google Search Console 접속</h2>
+        <p><a href="https://search.google.com/search-console" target="_blank">Google Search Console</a>에 접속하여 Google 계정으로 로그인합니다.</p>
+    </div>
+    
+    <div class="verification-box">
+        <h2>2단계: 사이트 등록</h2>
+        <p>"URL 접두어"를 선택하고 사이트 URL을 입력합니다:</p>
+        <div class="code">https://your-domain.com</div>
+        <p>⚠️ <strong>your-domain.com</strong> 부분을 실제 도메인으로 변경하세요!</p>
+    </div>
+    
+    <div class="verification-box">
+        <h2>3단계: 소유권 확인</h2>
+        <p>HTML 태그 방식을 선택하면 다음과 같은 메타 태그가 제공됩니다:</p>
+        <div class="code">&lt;meta name="google-site-verification" content="YOUR_VERIFICATION_CODE"&gt;</div>
+        <p>이 코드를 <code>index.html</code>의 &lt;head&gt; 섹션에 추가하세요.</p>
+    </div>
+    
+    <div class="verification-box">
+        <h2>4단계: 사이트맵 제출</h2>
+        <p>등록이 완료되면 "사이트맵" 메뉴에서 다음 URL을 제출하세요:</p>
+        <div class="code">https://your-domain.com/sitemap.xml</div>
+    </div>
+    
+    <div class="important">
+        <h3>⚠️ 중요 사항</h3>
+        <ul>
+            <li>모든 URL에서 <strong>your-domain.com</strong>을 실제 도메인으로 변경해야 합니다.</li>
+            <li>Google Search Console에서 제공하는 실제 인증 코드를 사용하세요.</li>
+            <li>사이트맵 제출 후 검색엔진에 색인이 생성되는 데 몇 주가 걸릴 수 있습니다.</li>
+        </ul>
+    </div>
+    
+    <div class="steps">
+        <h3>추가 SEO 최적화 팁</h3>
+        <ol>
+            <li><strong>콘텐츠 품질</strong>: 고품질의 원본 콘텐츠를 정기적으로 업데이트</li>
+            <li><strong>페이지 속도</strong>: 이미지 최적화 및 코드 최적화</li>
+            <li><strong>모바일 친화성</strong>: 반응형 디자인 확인</li>
+            <li><strong>내부 링크</strong>: 페이지 간 자연스러운 링크 구조</li>
+            <li><strong>로컬 SEO</strong>: 지역 정보가 있다면 Google My Business 등록</li>
+        </ol>
+    </div>
+    
+    <div class="verification-box">
+        <h2>5단계: 네이버 서치어드바이저 등록</h2>
+        <p><a href="https://searchadvisor.naver.com/" target="_blank">네이버 서치어드바이저</a>에서도 동일한 과정으로 사이트를 등록하세요.</p>
+        <p>네이버에서도 사이트맵을 제출하면 검색 노출이 향상됩니다.</p>
+    </div>
+    
+    <p><em>이 페이지는 Google Search Console 등록 후 삭제해도 됩니다.</em></p>
+</body>
+</html>
