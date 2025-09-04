@@ -22,30 +22,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // 로그인/로그아웃 링크 강제 표시
-    const loginLink = document.getElementById('login-link');
-    const logoutLink = document.getElementById('logout-link');
-    const userInfo = document.getElementById('user-info');
-    
-    if (loginLink) {
-        loginLink.style.display = 'inline-block';
-        loginLink.style.visibility = 'visible';
-        loginLink.style.opacity = '1';
-        console.log('Login link forced visible');
-    }
-    
-    if (logoutLink) {
-        logoutLink.style.display = 'inline-block';
-        logoutLink.style.visibility = 'visible';
-        logoutLink.style.opacity = '1';
-        console.log('Logout link forced visible');
-    }
-    
-    if (userInfo) {
-        userInfo.style.display = 'block';
-        userInfo.style.visibility = 'visible';
-        userInfo.style.opacity = '1';
-        console.log('User info forced visible');
+    // 로그인 링크는 기본적으로 표시 (마지막 3개 li 요소)
+    const menuItems = document.querySelectorAll('.nav-menu li');
+    if (menuItems.length >= 3) {
+        // 로그인 링크 (마지막에서 3번째)
+        menuItems[menuItems.length - 3].style.display = 'block';
+        menuItems[menuItems.length - 3].style.visibility = 'visible';
+        menuItems[menuItems.length - 3].style.opacity = '1';
+        console.log('Login link displayed by default');
     }
     
     try {
@@ -164,49 +148,36 @@ function applyDefaultMenuPermissions() {
 function updateAuthMenu(isLoggedIn, user = null) {
     console.log('updateAuthMenu called:', { isLoggedIn, user });
     
-    const loginLink = document.getElementById('login-link');
-    const logoutLink = document.getElementById('logout-link');
-    const userInfo = document.getElementById('user-info');
+    const menuItems = document.querySelectorAll('.nav-menu li');
+    if (menuItems.length < 3) return;
     
-    console.log('Elements found:', { loginLink, logoutLink, userInfo });
+    const loginItem = menuItems[menuItems.length - 3]; // 로그인
+    const logoutItem = menuItems[menuItems.length - 2]; // 로그아웃
+    const userInfoItem = menuItems[menuItems.length - 1]; // 사용자 정보
+    
+    console.log('Elements found:', { loginItem, logoutItem, userInfoItem });
     
     if (isLoggedIn && user) {
         // 로그인된 상태 - 로그아웃과 사용자 정보 표시
         console.log('Setting logged in state');
-        if (loginLink) {
-            loginLink.style.display = 'none';
-            console.log('Login link hidden');
-        }
-        if (logoutLink) {
-            logoutLink.style.display = 'inline-block';
-            logoutLink.style.visibility = 'visible';
-            logoutLink.style.opacity = '1';
-            console.log('Logout link shown');
-        }
-        if (userInfo) {
-            userInfo.style.display = 'block';
-            userInfo.style.visibility = 'visible';
-            userInfo.style.opacity = '1';
-            userInfo.innerHTML = `<span>${user.username} (${getRoleDisplayName(user.role)})</span>`;
-            console.log('User info shown:', user.username, user.role);
-        }
+        loginItem.style.display = 'none';
+        logoutItem.style.display = 'block';
+        logoutItem.style.visibility = 'visible';
+        logoutItem.style.opacity = '1';
+        userInfoItem.style.display = 'block';
+        userInfoItem.style.visibility = 'visible';
+        userInfoItem.style.opacity = '1';
+        userInfoItem.innerHTML = `👤 ${user.username} (${getRoleDisplayName(user.role)})`;
+        console.log('User info shown:', user.username, user.role);
     } else {
         // 로그인되지 않은 상태 - 로그인 표시
         console.log('Setting logged out state');
-        if (loginLink) {
-            loginLink.style.display = 'inline-block';
-            loginLink.style.visibility = 'visible';
-            loginLink.style.opacity = '1';
-            console.log('Login link shown');
-        }
-        if (logoutLink) {
-            logoutLink.style.display = 'none';
-            console.log('Logout link hidden');
-        }
-        if (userInfo) {
-            userInfo.style.display = 'none';
-            console.log('User info hidden');
-        }
+        loginItem.style.display = 'block';
+        loginItem.style.visibility = 'visible';
+        loginItem.style.opacity = '1';
+        logoutItem.style.display = 'none';
+        userInfoItem.style.display = 'none';
+        console.log('Login link shown');
     }
 }
 

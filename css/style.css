@@ -377,39 +377,35 @@ footer {
 }
 
 /* 로그인/로그아웃 링크 스타일 - 강제 표시 */
-#login-link, #logout-link {
-    display: inline-block !important;
-    padding: 8px 16px;
-    text-decoration: none;
-    color: white !important;
-    background-color: transparent;
-    border: 1px solid white;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    margin: 0 5px;
+.nav-menu li:last-child,
+.nav-menu li:nth-last-child(2),
+.nav-menu li:nth-last-child(3) {
+    display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     position: static !important;
     z-index: 999 !important;
+    margin: 5px !important;
 }
 
-#login-link:hover, #logout-link:hover {
-    background-color: white;
-    color: #333 !important;
-}
-
-#user-info {
-    display: block !important;
-    padding: 8px 16px;
-    color: white !important;
-    font-weight: bold;
+.nav-menu li:last-child a,
+.nav-menu li:nth-last-child(2) a,
+.nav-menu li:nth-last-child(3) {
+    display: inline-block !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    transition: all 0.3s ease !important;
     visibility: visible !important;
     opacity: 1 !important;
+    position: static !important;
+    z-index: 999 !important;
+    margin: 0 !important;
 }
 
-/* auth-status 컨테이너 강제 표시 */
-#auth-status {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+.nav-menu li:last-child a:hover,
+.nav-menu li:nth-last-child(2) a:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
 }

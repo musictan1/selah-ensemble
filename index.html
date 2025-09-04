@@ -195,11 +195,9 @@
                 <li><a href="youtube.html">유튜브</a></li>
                 <li><a href="https://www.instagram.com/selahensemble1/" target="_blank">인스타그램</a></li>
                 <li><a href="admin.html">회원관리</a></li>
-                <li id="auth-status">
-                    <a href="login.html" id="login-link">로그인</a>
-                    <a href="#" id="logout-link" onclick="logout()">로그아웃</a>
-                </li>
-                <li id="user-info">사용자 정보</li>
+                <li><a href="login.html" style="display: inline-block; padding: 8px 16px; border: 2px solid #ff6b6b; border-radius: 4px; color: #ff6b6b; text-decoration: none; background-color: rgba(255,107,107,0.1); font-weight: bold;">🔑 로그인</a></li>
+                <li><a href="#" onclick="logout()" style="display: none; padding: 8px 16px; border: 2px solid #4ecdc4; border-radius: 4px; color: #4ecdc4; text-decoration: none; background-color: rgba(78,205,196,0.1); font-weight: bold;">🚪 로그아웃</a></li>
+                <li style="display: none; padding: 8px 16px; color: #45b7d1; font-weight: bold; background-color: rgba(69,183,209,0.1); border-radius: 4px;">👤 사용자 정보</li>
             </ul>
         </nav>
     </header>
@@ -348,5 +346,8 @@
         // 페이지 로드 시 로그인 상태 확인
         document.addEventListener('DOMContentLoaded', checkLoginStatus);
     </script>
+    
+    <!-- 메뉴 권한 스크립트 로드 -->
+    <script src="js/menu-permissions.js"></script>
 </body>
 </html> 

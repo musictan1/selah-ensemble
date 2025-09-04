@@ -5,3 +5,6 @@
 2025-08-03T14:55:20.147214 | update_role | {'id': 5, 'username': 'goldgirl0220', 'old_role': 'new', 'new_role': 'special'}
 2025-08-24T07:06:09.354177 | register | {'id': 6, 'username': 'queensi', 'password': '12341234', 'name': '김민정', 'email': 'queensi@naver.com', 'phone': '010-2340-7531', 'role': 'new', 'created_at': '2025-08-24 07:06:09'}
 2025-09-04T13:23:28.823593 | update_role | {'id': 6, 'username': 'queensi', 'old_role': 'new', 'new_role': 'special'}
+2025-09-04T15:07:05.595022 | update_role | {'id': 3, 'username': 'smixdown2', 'old_role': 'regular', 'new_role': 'new'}
+2025-09-04T15:07:06.070696 | update_role | {'id': 3, 'username': 'smixdown2', 'old_role': 'new', 'new_role': 'new'}
+2025-09-04T15:11:35.830645 | update_role | {'id': 3, 'username': 'smixdown2', 'old_role': 'new', 'new_role': 'regular'}
