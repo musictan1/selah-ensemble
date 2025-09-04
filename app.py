@@ -1434,8 +1434,9 @@ def delete_post(post_id):
         if not post:
             return jsonify({'error': '게시글을 찾을 수 없습니다.'}), 404
             
-        if post['author_id'] != user['id'] and user['role'] != 'admin':
-            return jsonify({'error': '게시글을 삭제할 권한이 없습니다.'}), 403
+        # 삭제 권한은 관리자만 가능
+        if user['role'] != 'admin':
+            return jsonify({'error': '관리자만 게시글을 삭제할 수 있습니다.'}), 403
             
         if post['file']:
             file_path = os.path.join(UPLOAD_FOLDER, 'posts', post['file'])
@@ -1689,9 +1690,17 @@ def serve_upload(filename):
             if not user:
                 return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 401
             
-            # 모든 로그인 사용자에게 미리듣기 허용 (AI, MR, Live 모두 동일하게)
-            # 권한 체크 없이 바로 파일 제공
-            print(f"음악 파일 미리듣기 허용: {filename} (사용자: {user.get('username', 'unknown')}, 역할: {user.get('role', 'unknown')})")
+            # 미리듣기와 다운로드 구분
+            is_preview = request.args.get('preview') == 'true'
+            
+            if is_preview:
+                # 미리듣기: 모든 로그인 사용자 허용
+                print(f"음악 파일 미리듣기 허용: {filename} (사용자: {user.get('username', 'unknown')}, 역할: {user.get('role', 'unknown')})")
+            else:
+                # 다운로드: 관리자와 특별회원만 허용
+                if user['role'] not in ['admin', 'special']:
+                    return jsonify({'error': '특별회원 및 관리자만 음악 파일을 다운로드할 수 있습니다.'}), 403
+                print(f"음악 파일 다운로드 허용: {filename} (사용자: {user.get('username', 'unknown')}, 역할: {user.get('role', 'unknown')})")
         # scores 파일 요청 시 하위 default 폴더도 함께 찾기
         if len(path_parts) > 1 and path_parts[0] == 'scores':
             base_dir = os.path.join(UPLOAD_FOLDER, 'scores')
@@ -1717,10 +1726,52 @@ def serve_upload(filename):
         print(f"Error serving upload {filename}: {e}")
         return "File not found", 404
 
+# music.html 페이지 접근 권한 체크
+@app.route('/music.html')
+def music_page():
+    # 로그인 여부 확인
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # 사용자 정보 확인
+    users = load_users()
+    user = next((u for u in users if u['id'] == session['user_id']), None)
+    
+    if not user:
+        return redirect(url_for('login'))
+    
+    # 신입회원은 music 페이지 접근 불가
+    if user['role'] == 'new':
+        flash('신입회원은 음악 페이지에 접근할 수 없습니다.', 'error')
+        return redirect(url_for('index'))
+    
+    return send_from_directory('.', 'music.html')
+
 # URL에 파일 경로가 있는 경우를 위한 처리
 @app.route('/music/<path:path>')
 def serve_music(path):
     return send_from_directory(os.path.join(UPLOAD_FOLDER, 'music'), path)
+
+# scores.html 페이지 접근 권한 체크
+@app.route('/scores.html')
+def scores_page():
+    # 로그인 여부 확인
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # 사용자 정보 확인
+    users = load_users()
+    user = next((u for u in users if u['id'] == session['user_id']), None)
+    
+    if not user:
+        return redirect(url_for('login'))
+    
+    # 신입회원은 scores 페이지 접근 불가
+    if user['role'] == 'new':
+        flash('신입회원은 악보 페이지에 접근할 수 없습니다.', 'error')
+        return redirect(url_for('index'))
+    
+    return send_from_directory('.', 'scores.html')
 
 @app.route('/scores/<path:path>')
 def serve_scores(path):
@@ -1985,9 +2036,9 @@ def delete_inquiry(inquiry_id):
         if not current_user:
             return jsonify({'error': '인증되지 않은 사용자입니다.'}), 401
             
-        # 관리자/특별회원 권한 확인
-        if current_user['role'] not in ['admin', 'special']:
-            return jsonify({'error': '권한이 없습니다.'}), 403
+        # 삭제 권한은 관리자만 가능
+        if current_user['role'] != 'admin':
+            return jsonify({'error': '관리자만 문의를 삭제할 수 있습니다.'}), 403
             
         # 삭제할 문의 확인
         inquiries = load_inquiries()
@@ -2573,9 +2624,9 @@ def delete_schedule(schedule_id):
         if not schedule:
             return jsonify({'success': False, 'error': '일정을 찾을 수 없습니다.'}), 404
             
-        # 일정 삭제 권한 확인 (관리자 또는 작성자만 삭제 가능)
-        if user['role'] != 'admin' and schedule['created_by'] != user['id']:
-            return jsonify({'success': False, 'error': '일정을 삭제할 권한이 없습니다.'}), 403
+        # 일정 삭제 권한은 관리자만 가능
+        if user['role'] != 'admin':
+            return jsonify({'success': False, 'error': '관리자만 일정을 삭제할 수 있습니다.'}), 403
             
         # 일정 삭제
         schedules.remove(schedule)

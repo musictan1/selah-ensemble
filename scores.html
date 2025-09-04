@@ -254,6 +254,14 @@
         // 페이지 로드 시 사용자 정보 확인
         document.addEventListener('DOMContentLoaded', async function() {
             await checkAuth();
+            
+            // 권한 체크 - 신입회원은 scores 페이지 접근 불가
+            if (currentUser && currentUser.role === 'new') {
+                alert('신입회원은 악보 페이지에 접근할 수 없습니다.');
+                window.location.href = 'index.html';
+                return;
+            }
+            
             loadFiles();
         });
 

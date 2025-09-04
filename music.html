@@ -487,6 +487,14 @@
         // 페이지 로드 시 사용자 정보 확인
         document.addEventListener('DOMContentLoaded', async function() {
             await checkAuth();
+            
+            // 권한 체크 - 신입회원은 music 페이지 접근 불가
+            if (currentUser && currentUser.role === 'new') {
+                alert('신입회원은 음악 페이지에 접근할 수 없습니다.');
+                window.location.href = 'index.html';
+                return;
+            }
+            
             loadFiles();
 
             // 카테고리 제목 클릭 시 접기/펼치기 이벤트 추가
@@ -1095,7 +1103,7 @@
             audio.controls = true;
             
             const source = document.createElement('source');
-            source.src = filePath;
+            source.src = filePath + '?preview=true';
             source.type = file.toLowerCase().endsWith('.mp3') ? 'audio/mpeg' : 'audio/wav';
             
             // 디버깅 로그 추가

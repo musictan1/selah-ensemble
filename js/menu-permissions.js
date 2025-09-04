@@ -9,15 +9,34 @@ console.log('menu-permissions.js loaded!');
 let userRole = null;
 let menuPermissions = [];
 
-// 메뉴 권한과 상관없이 항상 모든 메뉴가 보이게 하는 최소 코드
-
-document.addEventListener('DOMContentLoaded', function() {
+// 메뉴 권한 체크 활성화
+document.addEventListener('DOMContentLoaded', async function() {
+    // 일시적으로 모든 메뉴 표시 (문제 해결을 위해)
     const navMenu = document.querySelector('.nav-menu');
-    if (!navMenu) return;
-    const menuItems = navMenu.querySelectorAll('li');
-    menuItems.forEach(menuItem => {
-        menuItem.style.display = '';
-    });
+    if (navMenu) {
+        const menuItems = navMenu.querySelectorAll('li');
+        menuItems.forEach(menuItem => {
+            menuItem.style.display = 'block';
+        });
+    }
+    
+    try {
+        // 사용자 인증 상태 확인
+        const response = await fetch('/api/check-auth');
+        const data = await response.json();
+        
+        if (data.is_authenticated) {
+            userRole = data.user.role;
+            await loadMenuPermissions();
+            applyMenuPermissions();
+            checkCurrentPagePermission();
+        } else {
+            applyDefaultMenuPermissions();
+        }
+    } catch (error) {
+        console.error('메뉴 권한 로드 오류:', error);
+        applyDefaultMenuPermissions();
+    }
 });
 
 // URL에서 메뉴 ID 추출 함수 (현재는 사용하지 않지만 남겨둠)
@@ -46,8 +65,89 @@ function getMenuIdFromHref(href) {
     return null;
 }
 
-// 아래 함수들은 현재 메뉴 숨김/권한 체크를 하지 않으므로 남겨두기만 합니다.
-function addLoginMenuItem() {}
-function applyDefaultMenuPermissions() {}
-function checkCurrentPagePermission() {}
-async function checkCurrentPagePermission() {}
+// 메뉴 권한 로드 함수
+async function loadMenuPermissions() {
+    try {
+        const response = await fetch('/api/menu-permissions');
+        const data = await response.json();
+        menuPermissions = data.permissions[userRole] || [];
+    } catch (error) {
+        console.error('메뉴 권한 로드 실패:', error);
+        menuPermissions = [];
+    }
+}
+
+// 메뉴 권한 적용 함수
+function applyMenuPermissions() {
+    const navMenu = document.querySelector('.nav-menu');
+    if (!navMenu) return;
+    
+    // 관리자는 모든 메뉴 표시
+    if (userRole === 'admin') {
+        const menuItems = navMenu.querySelectorAll('li');
+        menuItems.forEach(menuItem => {
+            menuItem.style.display = 'block';
+        });
+        return;
+    }
+    
+    const menuItems = navMenu.querySelectorAll('li');
+    menuItems.forEach(menuItem => {
+        const link = menuItem.querySelector('a');
+        if (!link) return;
+        
+        const menuId = getMenuIdFromHref(link.getAttribute('href'));
+        if (menuId && !menuPermissions.includes(menuId)) {
+            menuItem.style.display = 'none';
+        } else {
+            menuItem.style.display = 'block';
+        }
+    });
+}
+
+// 기본 메뉴 권한 적용 (로그인하지 않은 사용자)
+function applyDefaultMenuPermissions() {
+    const navMenu = document.querySelector('.nav-menu');
+    if (!navMenu) return;
+    
+    const menuItems = navMenu.querySelectorAll('li');
+    menuItems.forEach(menuItem => {
+        const link = menuItem.querySelector('a');
+        if (!link) return;
+        
+        const menuId = getMenuIdFromHref(link.getAttribute('href'));
+        // 로그인하지 않은 사용자는 기본 메뉴만 표시
+        if (menuId && !['about', 'performances', 'board', 'inquiry'].includes(menuId)) {
+            menuItem.style.display = 'none';
+        } else {
+            menuItem.style.display = 'block';
+        }
+    });
+}
+
+// 현재 페이지 접근 권한 확인
+function checkCurrentPagePermission() {
+    // 로그인하지 않은 사용자는 권한 체크 건너뛰기
+    if (!userRole) {
+        return;
+    }
+    
+    // 관리자는 모든 페이지 접근 가능
+    if (userRole === 'admin') {
+        return;
+    }
+    
+    const currentPath = window.location.pathname;
+    const currentMenuId = getMenuIdFromHref(currentPath);
+    
+    // 메인 페이지(about)는 모든 사용자 접근 가능
+    if (currentMenuId === 'about') {
+        return;
+    }
+    
+    if (currentMenuId && !menuPermissions.includes(currentMenuId)) {
+        alert('접근 권한이 없습니다.');
+        window.location.href = 'index.html';
+        return;
+    }
+}
