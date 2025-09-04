@@ -563,6 +563,7 @@ def logout():
         
         # 성공 응답 반환
         response = jsonify({
+            'success': True,
             'message': '로그아웃되었습니다.',
             'redirect': 'index.html'
         })
