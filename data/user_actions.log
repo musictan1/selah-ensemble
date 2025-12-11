@@ -9,3 +9,11 @@
 2025-09-04T15:07:06.070696 | update_role | {'id': 3, 'username': 'smixdown2', 'old_role': 'new', 'new_role': 'new'}
 2025-09-04T15:11:35.830645 | update_role | {'id': 3, 'username': 'smixdown2', 'old_role': 'new', 'new_role': 'regular'}
 2025-12-11T14:27:36.042688 | register | {'id': 7, 'username': 'bjay@naver,com', 'password': '11223344', 'name': '장봉만', 'email': 'bjay@naver.com', 'phone': '010-5530-7777', 'role': 'new', 'created_at': '2025-12-11 14:27:36'}
+2025-12-11T14:29:30.036684 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'new', 'new_role': 'new'}
+2025-12-11T14:29:31.079634 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'new', 'new_role': 'new'}
+2025-12-11T14:29:31.406776 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'new', 'new_role': 'new'}
+2025-12-11T14:29:32.086982 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'new', 'new_role': 'new'}
+2025-12-11T14:29:38.359628 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'new', 'new_role': 'special'}
+2025-12-11T14:29:38.685863 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'special', 'new_role': 'special'}
+2025-12-11T15:44:49.581929 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'special', 'new_role': 'special'}
+2025-12-11T15:44:49.581929 | update_role | {'id': 7, 'username': 'bjay@naver,com', 'old_role': 'special', 'new_role': 'special'}
