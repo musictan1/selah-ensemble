@@ -21,3 +21,5 @@
 2026-05-30T23:33:28.860142 | update_role | {'id': 4, 'username': 'knight807s', 'old_role': 'special', 'new_role': 'special'}
 2026-05-30T23:33:46.893065 | update_role | {'id': 4, 'username': 'knight807s', 'old_role': 'special', 'new_role': 'special'}
 2026-05-30T23:39:12.399014 | delete | {'id': 4, 'username': 'knight807s', 'password': 'Midi6150!!', 'name': '송바위솔', 'email': 'knight807s@naver.com', 'phone': '010-8021-1250', 'role': 'special', 'created_at': '2025-05-14 07:33:07'}
+2026-05-30T23:41:41.619100 | register | {'id': 8, 'username': 'knight807s', 'password': '12341234', 'name': '송바위솔', 'email': 'knight807s@naver.com', 'phone': '010-8021-1250', 'role': 'new', 'created_at': '2026-05-30 23:41:41'}
+2026-05-30T23:42:35.638407 | update_role | {'id': 8, 'username': 'knight807s', 'old_role': 'new', 'new_role': 'special'}
